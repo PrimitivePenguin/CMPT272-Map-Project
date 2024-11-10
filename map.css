@@ -1,0 +1,57 @@
+/*Shared between dark and light mode*/
+#map {
+    height: 80vh;
+    width: 100%;
+    align-items: center;
+    margin: 10px auto;
+}
+
+
+  
+/* Light Mode */
+body{
+    background-color: #eee;
+    color: #000000;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+a {
+    color: #1e88e5;
+}
+header, footer {
+    background-color: #f8f9fa;
+}
+
+.content {
+    width: 80%;
+    margin: 40px auto;
+    padding: 15px;
+    line-height: 1.6;
+    font-size: 18px;
+}
+
+body nav {
+    /* Default */
+    top: 0;
+    width: 100%;
+    padding: 5px;
+
+    position: sticky;
+    position: -webkit-sticky;
+    background-color: #ccc;
+}
+
+body nav ul {
+    /* Default */
+    text-align: center;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+body nav ul li {
+    /* Default */
+
+    border-right: 1px solid black;
+}
