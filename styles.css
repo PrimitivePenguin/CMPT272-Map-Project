@@ -66,10 +66,20 @@ h1 {
     margin: 10% auto;
     padding: 20px;
     width: 30%;
+    max-height: 80%;  /* Limit the height of the modal */
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;  /* Allow scrolling if content exceeds max height */
 }
 
+.modal-header img {
+    width: 100%;
+    max-height: 300px; /* Limit image height */
+    object-fit: contain; /* Ensure image maintains aspect ratio */
+    margin-bottom: 10px;
+}
+
+/* Close button style */
 .close {
     float: right;
     font-size: 24px;
@@ -105,4 +115,5 @@ tr:hover {
 .highlight {
     background-color: #ffeb3b;
 }
+
 
