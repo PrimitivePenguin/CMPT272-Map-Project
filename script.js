@@ -4,11 +4,14 @@
 /* 
   TODO:
     - MD5 password verification and saving
-    - using sessionStorage
+    - use DOM API for storage
     - make it look better
     - check if inputs are valid 
-    - edit the pm time
+    - edit the time appearamce in table
     - check if most recent table row should be at top
+    - make the HTML content form more pleasant
+    - delete alerts
+    - make modal format better
 */
 
 
@@ -158,115 +161,153 @@ function onMapClick(e) {
 // attach the map click handler
 map.on('click', onMapClick);
 
-// display details of a selected marker in a modal
+// Function to display details of a selected marker in a modal
 function viewDetails(index) {
-  const locationEntry = locationData[index];
+  // get the location data for the selected marker
+  const locationEntry = locationData[index];  
+  // create the HTML content for the modal (DETAILS)
   const modalHTML = `
     <div id="detailsModal" class="modal">
       <div class="modal-content">
-        <span class="close" onclick="closeModal()">×</span>
+        <span class="close" onclick="closeModal()">×</span>  <!-- Close button for the modal -->
         <div class="modal-header">
+          <!-- If an image URL is present, display the image -->
           ${locationEntry.imageURL ? `<img src="${locationEntry.imageURL}" alt="Location Image" style="width: 100%; height: auto;">` : ''}
         </div>
         <div class="modal-body">
+          <!-- Display the location details -->
           <h2>${locationEntry.locationName}</h2>
           <p><b>Type:</b> ${locationEntry.reportType}</p>
           <p><b>Status:</b> ${locationEntry.status}</p>
           <p><b>Reported:</b> ${locationEntry.timeReported}</p>
           <p><b>More Info:</b> ${locationEntry.moreInfo || 'No additional details'}</p>
+          <!-- Buttons for editing or deleting the marker -->
           <button onclick="editMarker(${index})">Edit</button>
           <button onclick="deleteMarker(${index})">Delete</button>
         </div>
       </div>
     </div>
   `;
+  // add the modal (DETAILS) HTML to the page and show it
   document.body.insertAdjacentHTML('beforeend', modalHTML);
   document.getElementById('detailsModal').style.display = 'block';
 }
 
-// close the details modal
+// function to close the details modal
 function closeModal() {
-  const modal = document.getElementById('detailsModal');
+  // get the modal element
+  const modal = document.getElementById('detailsModal');  
   if (modal) { 
-    modal.remove();
+    // remove the modal from the page
+    modal.remove();  
   }
 }
 
-// Edit an existing marker's details
+// Function to edit the details of a marker
 function editMarker(index) {
-  // get the marker's data
-  const markerData = locationData[index]; 
-  // retrieve the password if set
-  let savedPassword = markerData.markerPassword; 
+  // get the marker data
+  const markerData = locationData[index];  
+  // get the password if set for the marker
+  let savedPassword = markerData.markerPassword;  
 
-  // if no password exists, ask the user to make one
+  // if no password is set, prompt the user to create one
   if (!savedPassword) {
     const newPassword = prompt("No password set. Please create a new password:");
     if (newPassword) {
-      markerData.markerPassword = newPassword;
+      // save the new password
+      markerData.markerPassword = newPassword; 
       alert("Password set successfully. You can now edit this marker.");
-    } 
-    else {
+    } else {
       alert("Password creation canceled.");
       return;
     }
-  } 
-  else {
-    // verify the user's password before editing
-    const enteredPassword = prompt("Enter password to edit:");
+  } else {
+    // if a password exists just ask the user to enter it
+    const enteredPassword = prompt("Enter password to edit: ");
     if (enteredPassword !== savedPassword) {
       alert("Incorrect password. Edit canceled.");
       return;
     }
   }
 
-  // allow the user to update the status
-  const newStatus = prompt("Change the status (open/resolved):", markerData.status);
-  if (newStatus) {
-    markerData.status = newStatus;
-    // update the marker's popup to reflect the new status
-    markers[index].bindPopup(
-      `<b>Location:</b> ${markerData.locationName}<br>
-      <b>Type:</b> ${markerData.reportType}<br>
-      <b>Status:</b> ${newStatus}<br>
-      <b>Reported:</b> ${markerData.timeReported}<br>
-      <button onclick="viewDetails(${index})">More Info</button>
-      <button onclick="editMarker(${index})">Edit</button>
-      <button onclick="deleteMarker(${index})">Delete</button>`
-    ).openPopup();
+  // ask the user if they want to continue with editing
+  const shouldEdit = confirm("Do you want to edit the marker?");
+  if (shouldEdit) {
+    const newStatus = prompt("Change the status (open/resolved):", markerData.status);
+    if (newStatus) {
+      // update the status of the marker
+      markerData.status = newStatus;  
+      // markers[index].bindPopup(
+      //   `<b>Location:</b> ${markerData.locationName}<br>
+      //   <b>Type:</b> ${markerData.reportType}<br>
+      //   <b>Status:</b> ${newStatus}<br>
+      //   <b>Reported:</b> ${markerData.timeReported}<br>
+      //   <button onclick="viewDetails(${index})">More Info</button>
+      //   <button onclick="editMarker(${index})">Edit</button>
+      //   <button onclick="deleteMarker(${index})">Delete</button>`
+      // );
 
-    // Update the corresponding table row's status cell
-    const tableRow = document.querySelectorAll('table tr')[index + 1]; // adjust for header row
-    // change the status in the corresponding table row
-    tableRow.cells[3].innerText = newStatus;
+      // update the status in the table row
+      const tableRow = document.querySelectorAll('table tr')[index + 1]; 
+      tableRow.cells[3].innerText = newStatus;
 
-    alert("Marker updated successfully.");
+      alert("Marker updated successfully.");
+      
+      // close the modal after editing
+      closeModal(); 
+    }
+  } else {
+    alert("Edit canceled.");
   }
 }
 
-// Delete a marker from the map and data
+// function to delete a marker (similar password checker as editMarker)
 function deleteMarker(index) {
-  // get the marker's data
-  const markerData = locationData[index]; 
-  // retrieve the password
-  const savedPassword = markerData.markerPassword; 
+  // get the marker data
+  const markerData = locationData[index];  
+  // get the password if set for the marker
+  const savedPassword = markerData.markerPassword;  
 
-  // prompt the user for the right password
-  const enteredPassword = prompt("Enter password to delete:");
-  if (enteredPassword === savedPassword) {
-    // remove the marker from the map and arrays
-    map.removeLayer(markers[index]);
-    markers.splice(index, 1);
-    locationData.splice(index, 1);
-
-    // update the table by removing the corresponding row
-    const table = document.querySelector('table');
-    // adjust for header row
-    table.deleteRow(index + 1); 
-    alert("Marker deleted successfully.");
+  // if no password exists prompt the user to make one
+  if (!savedPassword) {
+    const newPassword = prompt("No password set. Please create a new password:");
+    if (newPassword) {
+      // save the newly created password
+      markerData.markerPassword = newPassword;  
+      alert("Password set successfully. You can now delete this marker.");
+    } else {
+      alert("Password creation canceled.");
+      return;
+    }
   } 
   else {
-    alert("Incorrect password. Cannot delete this marker.");
+    // if a password is set, ask the user to enter it
+    const enteredPassword = prompt("Enter password to delete:");
+    if (enteredPassword !== savedPassword) {
+      alert("Incorrect password. Deletion canceled.");
+      return;
+    }
+  }
+
+  // ask the user to confirm if they want to delete the marker
+  const deleteConfirmed = confirm("Are you sure you want to delete this marker?");
+  if (deleteConfirmed) {
+    // we need to consider 3 cases
+    // remove the marker from the map
+    map.removeLayer(markers[index]);  
+    // remove the marker from the markers array
+    markers.splice(index, 1);  
+    // remove the marker data from the locationData array
+    locationData.splice(index, 1);  
+
+    // Remove the corresponding row from the table
+    const table = document.querySelector('table');
+    table.deleteRow(index + 1); 
+
+    // debug
+    alert("Marker deleted successfully.");
+
+    // close the modal (the details) after deletion
+    closeModal();  
   }
 }
-
