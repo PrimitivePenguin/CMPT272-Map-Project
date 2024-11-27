@@ -12,7 +12,7 @@
 body{
     background-color: #eee;
     color: #000000;
-    margin: 0;
+    margin: 50px;
     padding: 0;
     font-family: Arial, Helvetica, sans-serif;
 }
@@ -54,4 +54,93 @@ body nav ul li {
     /* Default */
 
     border-right: 1px solid black;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+th {
+    background-color: #f4f4f4;
+}
+img {
+    width: 50px;
+    height: 50px;
+}
+
+#popupForm {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border: 1px solid #ddd;
+    padding: 20px;
+    z-index: 1000;
+}
+#popupForm input, #popupForm button {
+    display: block;
+    margin: 10px 0;
+}
+#overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+/* Detail popup styling */
+#detailPopup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border: 1px solid #ddd;
+    padding: 20px;
+    z-index: 1000;
+}
+
+#detailPopup p {
+    margin: 10px 0;
+}
+
+#detailPopup button {
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#detailPopup button:hover {
+    background-color: #0056b3;
+}
+
+/* Add Request button styling */
+#addRequest {
+    margin: 20px 0;
+    padding: 10px 15px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#addRequest:hover {
+    background-color: #218838;
 }
