@@ -6,17 +6,7 @@ const requests = [
         Location: 'XYZ Dr',
         Picture: 'IMG.url',
         Comments: 'blah',
-        Time: 'time',
+        Time: '2024-11-26 12:00 PM',
         Status: 'Open',
-    },
-    {
-        Name: 'Jane Smith',
-        PhoneNumber: 987654321,
-        Type: 'Fire',
-        Location: 'ABC Ave',
-        Picture: 'IMG2.url',
-        Comments: 'urgent',
-        Time: 'another time',
-        Status: 'Closed',
     }
 ];
