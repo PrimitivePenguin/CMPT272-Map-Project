@@ -317,10 +317,15 @@ const tableBody = document.querySelector('#requestsTable tbody');
 const popupForm = document.querySelector('#popupForm');
 const overlay = document.querySelector('#overlay');
 const detailPopup = document.createElement('div');
+const closeRequestPopup = document.createElement('div');
 
 // Create and style the detail popup dynamically
 detailPopup.id = 'detailPopup';
 document.body.appendChild(detailPopup);
+
+// Create and style close request popup
+closeRequestPopup.id = 'detailPopup'
+document.body.appendChild(closeRequestPopup);
 
 function showPopup() {
     popupForm.style.display = 'block';
@@ -344,6 +349,7 @@ function showDetails(request) {
         <p><strong>Time:</strong> ${request.Time}</p>
         <p><strong>Status:</strong> ${request.Status}</p>
         <button onclick="hideDetails()">Close</button>
+        <button onclick="showCloseReport()">Close Report</button>
     `;
     detailPopup.style.display = 'block';
     overlay.style.display = 'block';
@@ -354,6 +360,22 @@ function hideDetails() {
     overlay.style.display = 'none';
 }
 
+function showcloseReport(){
+    closReportPopup.innerHTML = `
+
+        <h3>Password Stuff<h3>
+        <button onclick="hideCloseReport">Close</button>
+    
+    `
+    closeReportPopup.style.display = 'block';
+    overlay.style.display = 'block';
+}
+
+
+function hideCloseReport(){
+    closeReportPopup.style.display = 'none';
+    overlay.style.display = 'none';
+}
 
 function renderTable() {
     // Clear the table first
