@@ -27,8 +27,6 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
 /* End of setup */
-
-
 // Array to hold locations
 let locationData = []; 
 // Array to keep references to map markers
@@ -312,4 +310,33 @@ function deleteMarker(index) {
   }
 }
 
+function admin() {
+  viewOnly = !viewOnly; 
+  alert(viewOnly ? "Logged out. You cannot add new markers." : "Welcome back.");
+  const button = document.getElementById('admin');
+  if (viewOnly) {
+    // TODO: maybe add images
+    button.innerHTML = '<img src="cant_addmarker.png" alt="Log in">'; 
+  } else {
+    button.innerHTML = '<img src="addmarker.png" alt="Log Out">'; 
+  }
+}
+function login(hash) {
+  var enteredPassword = CryptoJS.MD5(prompt("Enter password to view the map:"));
+  var strPass = enteredPassword.toString();
+  console.log(strPass);
+  if (strPass !== hash) {
+    alert("Incorrect password. Access denied.");
+    viewOnly = true;
+  } else {
+    alert("Access granted.");
+    viewOnly = false;
+  }
+}
 
+document.addEventListener('DOMContentLoaded', () => { 
+  var hash = CryptoJS.MD5("Message");
+  var str_hash = hash.toString(); 
+  console.log(str_hash);
+  login(str_hash);
+});
