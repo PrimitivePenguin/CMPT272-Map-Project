@@ -51,8 +51,6 @@ function toggleViewOnly() {
   }
 }
 // add event listener to the toggle button
-document.getElementById('toggleViewOnlyBtn').addEventListener('click', toggleViewOnly);
-
 // handles map click events to add a new marker with form input
 function onMapClick(e) {
   console.log("View-Only Mode: " + viewOnly);
@@ -66,7 +64,8 @@ function onMapClick(e) {
   const formHTML = `
     <div class="popup-content">
       <form id="locationForm">
-        <label>Location Name: <input type="text" id="locationName" placeholder="Enter location (e.g., SFU)"></label><br>
+        <labe>Name: <input type="text" id="name"></label><br>
+        <label>Location: <input type="text" id="locationName" placeholder="Enter location (e.g., SFU)"></label><br>
         <label>Type: <input type="text" id="reportType" placeholder="Enter type (e.g., shooting, medical)"></label><br>
         <label>Status: 
           <select id="status">
@@ -74,8 +73,10 @@ function onMapClick(e) {
             <option value="resolved">Resolved</option>
           </select>
         </label><br>
+        <label>Phone number: <input type="tel" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"></label><br>
         <label>More Info: <textarea id="moreInfo" placeholder="Enter additional details"></textarea></label><br>
         <label>Optional Image: <input type="file" id="imageUpload" accept="image/*"></label><br>
+        <labe>Create password: <input type="checkbox" id="passCheck"></label><br>
         <button type="submit">Submit</button>
       </form>
     </div>
@@ -90,17 +91,24 @@ function onMapClick(e) {
   document.getElementById('locationForm').onsubmit = function(event) {
     event.preventDefault();
     // retrieve form data
+    const name = document.getElementById('name').value;
+    const phone = document.getElementById('phone').value;
     const locationName = document.getElementById('locationName').value;
     const reportType = document.getElementById('reportType').value;
-    const status = document.getElementById('status').value;
+    const status = 'Open';
     const moreInfo = document.getElementById('moreInfo').value;
     const imageFile = document.getElementById('imageUpload').files[0];
     const imageURL = imageFile ? URL.createObjectURL(imageFile) : null; 
 
     // add location data to the array locationData
-    const locationEntry = { locationName, reportType, status, timeReported, moreInfo, imageURL, markerPassword: null };
-    locationData.push(locationEntry);
-
+    
+    if (document.getElementById('passCheck').checked) {
+      var pass = createPassword();
+      locationData.push({ name, phone,  reportType, location, imageURL, moreInfo, timeReported, markerPassword: pass });
+    } else {
+      locationData.push({ name, phone,  reportType, location, imageURL, moreInfo, timeReported, markerPassword: null });
+    }
+    console.log(locationData);
     // create a marker on the map
     const markerIndex = locationData.length - 1; // index of the newly added location
     // add marker to the array markers
@@ -223,7 +231,7 @@ function editMarker(index) {
     }
   } else {
     // if a password exists just ask the user to enter it
-    const enteredPassword = prompt("Enter password to edit: ");
+    const enteredPassword = CryptoJS.MD5(prompt("Enter password to edit: ")).tosString();
     if (enteredPassword !== savedPassword) {
       alert("Incorrect password. Edit canceled.");
       return;
@@ -270,25 +278,16 @@ function deleteMarker(index) {
 
   // if no password exists prompt the user to make one
   if (!savedPassword) {
-    const newPassword = prompt("No password set. Please create a new password:");
-    if (newPassword) {
-      // save the newly created password
-      markerData.markerPassword = newPassword;  
-      alert("Password set successfully. You can now delete this marker.");
-    } else {
-      alert("Password creation canceled.");
-      return;
-    }
+    createPassword();
   } 
   else {
     // if a password is set, ask the user to enter it
-    const enteredPassword = prompt("Enter password to delete:");
+    const enteredPassword = CryptoJS.MD5(prompt("Enter password to delete:")).toString();
     if (enteredPassword !== savedPassword) {
       alert("Incorrect password. Deletion canceled.");
       return;
     }
   }
-
   // ask the user to confirm if they want to delete the marker
   const deleteConfirmed = confirm("Are you sure you want to delete this marker?");
   if (deleteConfirmed) {
@@ -416,3 +415,59 @@ function addRequest() {
 // Initial render
 renderTable();
 
+// password stuff
+function createPassword() {
+  var newPassword = prompt("No password set. Please create a new password:");
+  newPassword = CryptoJS.MD5(newPassword);
+  newPassword = newPassword.toString();
+  if (newPassword) {
+    // save the newly created password
+    
+    //markerData.markerPassword = newPassword;  
+    return newPassword;
+  } else {
+    alert("Password creation canceled.");
+    return null;
+  }
+}
+var hash = CryptoJS.MD5("Message");
+function admin() {
+  if (viewOnly == true) {
+    login();
+  } else {
+    logout();
+  }
+ 
+  const button = document.getElementById('admin');
+  if (viewOnly) {
+    // TODO: maybe add images
+    button.innerHTML = '<img src="cant_addmarker.png" alt="Log in">'; 
+  } else {
+    button.innerHTML = '<img src="addmarker.png" alt="Log Out">'; 
+  }
+}
+function login() {
+  // Ask for password
+  var enteredPassword = CryptoJS.MD5(prompt("Enter password to view the map:"));
+  var strPass = enteredPassword.toString();
+  var strHash = hash.toString();
+  console.log(strPass);
+  // Compare password
+  if (strPass !== strHash) {
+    viewOnly = true;
+    alert("Incorrect password.");
+  } else {
+    viewOnly = false;
+    alert("Welcome back.");
+  }
+}
+
+function logout() {
+  viewOnly = true;
+  alert("Logged out. You cannot add new markers.");
+}
+document.getElementById('admin').addEventListener('click', admin);
+
+document.addEventListener('DOMContentLoaded', function() {
+  viewOnly = true;
+});
