@@ -3,8 +3,77 @@ body {
     text-align: center;
     margin: 0;
     padding: 0;
+    color: #333;
+    background-color: #fff;
+}
+body {
+    &.dark {
+        background-color: #333;
+        color: #fff;
+    }
 }
 
+.dm_ip_check {
+    width: 200px;
+    position: relative;
+    display: inline-block;
+    padding: 15px 100px;
+}
+.dm_ip_check input {
+	display: none;
+    align-items: center;
+}
+.dm_ip_check label {
+	position: relative;
+	display: block;
+	padding: 15px 0;
+	padding-right: 35px;
+	cursor: pointer;
+  font-size: 1rem;
+}
+.dm_ip_check input[type='checkbox'] {
+	position: absolute;
+	visibility: hidden !important;
+}
+.dm_ip_check input[type='checkbox'] + label:before,
+.dm_ip_check input[type='checkbox'] + label:after {
+	position: absolute;
+	top: 50%;
+	-webkit-box-sizing: border-box;
+	        box-sizing: border-box;
+	margin-top: -7.5px;
+	content: '';
+}
+.dm_ip_check input[type='checkbox'] + label:before {
+	
+    right: 0;
+	width: 60px;
+	height: 30px;
+	border: 1px solid #e4e3e1;
+	border-radius: 30px;
+	background: #ffffff;
+}
+.dm_ip_check input[type='checkbox']:checked + label:before {
+    background-color: #bbb;
+}
+/* Circle within the mode*/
+.dm_ip_check input[type='checkbox'] + label:after {
+	right: 29px;
+	width: 30px;
+	height: 30px;
+	-webkit-transition: all 200ms ease-out;
+	        transition: all 200ms ease-out;
+	border-radius: 50%;
+	background: #bdbdbd;
+}
+.dm_ip_check input[type='checkbox']:checked + label:after {
+	right: 0;
+	background: #545454;
+    background-size: contain;
+  background-repeat: no-repeat;
+  font-family:"Font Awesome 5 Free";
+  padding: 6px 0 0 8px;
+}
 /* Title and description style */
 h1 {
     margin-top: 30px;
@@ -110,6 +179,9 @@ th, td {
 tr:hover {
     background-color: #f1f1f1;
     cursor: pointer;
+}
+body.dark tr:hover {
+    background-color: #555;
 }
 
 .highlight {

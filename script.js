@@ -470,4 +470,24 @@ document.getElementById('admin').addEventListener('click', admin);
 
 document.addEventListener('DOMContentLoaded', function() {
   viewOnly = true;
+  changeMode();
+});
+
+// dark mode
+const btn = document.querySelector('#modeChange');
+function changeMode() {
+  if (btn.checked == true) {
+    // Dark mode
+    document.body.classList.remove('light');
+    document.body.classList.add('dark');
+    console.log("Dark mode");
+  } else {
+      // Light mode
+      document.body.classList.remove('dark');
+      document.body.classList.add('light');
+      console.log("Light mode");
+  }
+}
+btn.addEventListener('change', function() {
+  changeMode();
 });
