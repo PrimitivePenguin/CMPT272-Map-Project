@@ -597,16 +597,27 @@ function sortRequests(sortBy, order = 'asc') {
       if (sortBy === 'Time') {
           const timeA = new Date(a.Time);
           const timeB = new Date(b.Time);
-          return order === 'asc' ? timeA - timeB : timeB - timeA;
+          if (timeA !== timeB) {
+            return order === 'asc' ? timeA - timeB : timeB - timeA;
+          }
       } else if (sortBy === 'PhoneNumber') {
-          return order === 'asc' ? a.PhoneNumber - b.PhoneNumber : b.PhoneNumber - a.PhoneNumber;
+          const phoneDiff = order === 'asc' ? a.PhoneNumber - b.PhoneNumber : b.PhoneNumber - a.PhoneNumber;
+          if (phoneDiff !== 0) {
+               return phoneDiff;
+          }
       } else {
           const valA = a[sortBy].toString().toLowerCase();
           const valB = b[sortBy].toString().toLowerCase();
           if (valA < valB) return order === 'asc' ? -1 : 1;
           if (valA > valB) return order === 'asc' ? 1 : -1;
-          return 0;
       }
+
+      const nameA = a.Name.toString().toLowerCase();
+      const nameB = b.Name.toString().toLowerCase();
+      if (nameA < nameB) return -1;
+      if (nameA > nameB) return 1;
+      
+      return 0;
   };
 
   return requests.sort(compare);
@@ -630,5 +641,18 @@ document.querySelectorAll('#requestsTable th').forEach(th => {
 
       // Render the sorted table
       renderTable(sortedRequests);
+
+      updateSortIndicators();
   });
 });
+
+function updateSortIndicators() {
+  document.querySelectorAll('#requestsTable th').forEach(th => {
+      const column = th.getAttribute('data-sort');
+      if (currentSort.column === column) {
+          th.textContent = `${th.dataset.sort} ${currentSort.order === 'asc' ? '↑' : '↓'}`;
+      } else {
+          th.textContent = th.dataset.sort; // Reset other headers
+      }
+  });
+}
