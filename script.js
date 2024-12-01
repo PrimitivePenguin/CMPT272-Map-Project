@@ -17,9 +17,9 @@
 
 /* Setup */
 // initialize the map centered at (Vancouver, BC) with default zoom level 12
-var map = L.map('map', { 
-  trackResize: true, 
-  minZoom: 10        
+var map = L.map('map', {
+  trackResize: true,
+  minZoom: 10
 }).setView([49.2827, -123.1207], 12);
 
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -30,24 +30,27 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 
 // Array to hold locations
-let locationData = []; 
+// If there are requests in local storage, retrieve them first
+let storedRequests = localStorage.getItem("requestsArray");
+let locationData = storedRequests ? JSON.parse(storedRequests) : [];
 // Array to keep references to map markers
-let markers = [];      
+// locally stored markers are initialized through DOM load event   
+let markers = [];
 // Flag to track if the map is in view-only mode
-let viewOnly = false; 
+let viewOnly = false;
 
 
 /* Functionality */
 // toggles adding new markers 
 function toggleViewOnly() {
-  viewOnly = !viewOnly; 
+  viewOnly = !viewOnly;
   alert(viewOnly ? "Map is now in view-only mode. You cannot add new markers." : "Map is no longer in view-only mode.");
   const button = document.getElementById('toggleViewOnlyBtn');
   if (viewOnly) {
     // TODO: maybe add images
-    button.innerHTML = '<img src="cant_addmarker.png" alt="View Only">'; 
+    button.innerHTML = '<img src="cant_addmarker.png" alt="View Only">';
   } else {
-    button.innerHTML = '<img src="addmarker.png" alt="Add Mode">'; 
+    button.innerHTML = '<img src="addmarker.png" alt="Add Mode">';
   }
 }
 // add event listener to the toggle button
@@ -55,11 +58,11 @@ function toggleViewOnly() {
 function onMapClick(e) {
   console.log("View-Only Mode: " + viewOnly);
   // flag to track if the map is in view-only mode
-  if (viewOnly) { 
-    return; 
+  if (viewOnly) {
+    return;
   }
   // get current timestamp
-  const timeReported = new Date().toLocaleString('en-US', { hour12: true }); 
+  const timeReported = new Date().toLocaleString('en-US', { hour12: true });
   // HTML form for capturing marker details
   const formHTML = `
     <div class="popup-content">
@@ -86,9 +89,9 @@ function onMapClick(e) {
   const popup = L.popup({
     shadowSize: [50, 50]
   }).setLatLng(e.latlng).setContent(formHTML).openOn(map);
-  
+
   // handle form submission to add marker data
-  document.getElementById('locationForm').onsubmit = function(event) {
+  document.getElementById('locationForm').onsubmit = function (event) {
     event.preventDefault();
     // retrieve form data
     const name = document.getElementById('name').value;
@@ -98,20 +101,22 @@ function onMapClick(e) {
     const status = 'Open';
     const moreInfo = document.getElementById('moreInfo').value;
     const imageFile = document.getElementById('imageUpload').files[0];
-    const imageURL = imageFile ? URL.createObjectURL(imageFile) : null; 
+    const imageURL = imageFile ? URL.createObjectURL(imageFile) : null;
 
     // add location data to the array locationData
-    
+
     if (document.getElementById('passCheck').checked) {
       var pass = createPassword();
-      locationData.push({ name, phone,  reportType, location, imageURL, moreInfo, timeReported, markerPassword: pass });
+      locationData.push({ name, phone, locationName, reportType, status, location, imageURL, moreInfo, timeReported, markerPassword: pass });
     } else {
-      locationData.push({ name, phone,  reportType, location, imageURL, moreInfo, timeReported, markerPassword: null });
+      locationData.push({ name, phone, locationName, reportType, status, location, imageURL, moreInfo, timeReported, markerPassword: null });
     }
     console.log(locationData);
+    localStorage.setItem("requestsArray", JSON.stringify(locationData));
+
     // create a marker on the map
-    const markerIndex = locationData.length - 1; // index of the newly added location
-    // add marker to the array markers
+    const markerIndex = locationData.length - 1;
+    // add marker to the markers array
     const marker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(map);
     markers.push(marker);
 
@@ -122,17 +127,28 @@ function onMapClick(e) {
       direction: 'top',
     });
 
+    // add marker to local storage
+    // only store essential info, bc marker objects are complicated
+    const markerData = markers.map(marker => ({
+      lat: marker.getLatLng().lat,
+      lng: marker.getLatLng().lng,
+    }));
+    localStorage.setItem("markerArray", JSON.stringify(markerData));
+
     // add a new row to the table with location details
     const tableRow = document.createElement('tr');
     const hasMoreInfo = moreInfo ? '✅' : '❎';
     tableRow.innerHTML = `
-      <td>${locationName}</td>
+      <td>${name}</td>
+      <td>${phone}</td>
       <td>${reportType}</td>
+      <td>${locationName}</td>
+      <td>${imageURL}</td>
+      <td>
+      <span onclick="viewDetails(${markerIndex})" style="cursor:pointer;color:blue;text-decoration:underline;">View Info</span> (${hasMoreInfo})
+      </td> 
       <td>${timeReported}</td>
       <td>${status}</td>
-      <td>
-        <span onclick="viewDetails(${markerIndex})" style="cursor:pointer;color:blue;text-decoration:underline;">View Info</span> (${hasMoreInfo})
-      </td>
     `;
     // find first instance of table in html file
     document.querySelector('table').appendChild(tableRow);
@@ -162,9 +178,91 @@ function onMapClick(e) {
     });
 
     // close the popup after adding the marker
-    popup.remove(); 
+    popup.remove();
   };
 }
+
+// Function to render data that was stored in local
+// basically the last part of onMapClick()
+function renderLocalTable() {
+  // Check if there are any stored locationData and markers
+  if (locationData.length > 0) {
+    locationData.forEach((entry, index) => {
+
+      // Add row to the table
+      const tableRow = document.createElement('tr');
+      const hasMoreInfo = entry.moreInfo ? '✅' : '❎';
+      tableRow.innerHTML = `
+        <td>${entry.name}</td>
+        <td>${entry.phone}</td>
+        <td>${entry.reportType}</td>
+        <td>${entry.locationName}</td>
+        <td>${entry.imageURL}</td>
+        <td>
+          <span onclick="viewDetails(${index})" style="cursor:pointer;color:blue;text-decoration:underline;">View Info</span> (${hasMoreInfo})
+        </td>
+        <td>${entry.timeReported}</td>
+        <td>${entry.status}</td>
+      `;
+      document.querySelector('table').appendChild(tableRow);
+
+      // Add hover events to table rows and markers
+      let marker = markers[index];
+      tableRow.addEventListener('mouseover', () => {
+        marker.openTooltip();
+        tableRow.style.backgroundColor = '#FFFF00';
+      });
+      tableRow.addEventListener('mouseout', () => {
+        marker.closeTooltip();
+        tableRow.style.backgroundColor = '';
+      });
+      // hover over tooltip case
+      marker.on('mouseover', () => {
+        marker.openTooltip();
+        tableRow.style.backgroundColor = '#FFFF00';
+      });
+      marker.on('mouseout', () => {
+        marker.closeTooltip();
+        tableRow.style.backgroundColor = '';
+      });
+
+    });
+  }
+}
+
+// funtion to render locally stored markers
+// also similar to last part of onMapClick()
+function renderLocalMarkers() {
+  const storedMarkers = localStorage.getItem("markerArray");
+  // if there is local data, extract it
+  if (storedMarkers) {
+    const markerData = JSON.parse(storedMarkers);
+    markerData.forEach(({ lat, lng }, index) => {
+      // add marker to map and markers array
+      const marker = L.marker([lat, lng]).addTo(map);
+      markers.push(marker);
+
+      const location = locationData[index];
+      if (location) {
+        marker.bindTooltip(`<strong>${location.location}</strong><br>${location.reportType}`, {
+          offset: [-15, -20],
+          direction: 'top',
+        });
+      }
+
+      // add click event to marker
+      marker.on('click', () => {
+        viewDetails(index);
+      });
+    });
+  }
+}
+
+// render locally stored map markers
+document.addEventListener('DOMContentLoaded', renderLocalMarkers);
+
+// render locally stored requests when page loads
+document.addEventListener('DOMContentLoaded', renderLocalTable);
 
 // attach the map click handler
 map.on('click', onMapClick);
@@ -172,7 +270,7 @@ map.on('click', onMapClick);
 // Function to display details of a selected marker in a modal
 function viewDetails(index) {
   // get the location data for the selected marker
-  const locationEntry = locationData[index];  
+  const locationEntry = locationData[index];
   // create the HTML content for the modal (DETAILS)
   const modalHTML = `
     <div id="detailsModal" class="modal">
@@ -204,26 +302,26 @@ function viewDetails(index) {
 // function to close the details modal
 function closeModal() {
   // get the modal element
-  const modal = document.getElementById('detailsModal');  
-  if (modal) { 
+  const modal = document.getElementById('detailsModal');
+  if (modal) {
     // remove the modal from the page
-    modal.remove();  
+    modal.remove();
   }
 }
 
 // Function to edit the details of a marker
 function editMarker(index) {
   // get the marker data
-  const markerData = locationData[index];  
+  const markerData = locationData[index];
   // get the password if set for the marker
-  let savedPassword = markerData.markerPassword;  
+  let savedPassword = markerData.markerPassword;
 
   // if no password is set, prompt the user to create one
   if (!savedPassword) {
     const newPassword = prompt("No password set. Please create a new password:");
     if (newPassword) {
       // save the new password
-      markerData.markerPassword = newPassword; 
+      markerData.markerPassword = newPassword;
       alert("Password set successfully. You can now edit this marker.");
     } else {
       alert("Password creation canceled.");
@@ -244,7 +342,7 @@ function editMarker(index) {
     const newStatus = prompt("Change the status (open/resolved):", markerData.status);
     if (newStatus) {
       // update the status of the marker
-      markerData.status = newStatus;  
+      markerData.status = newStatus;
       // markers[index].bindPopup(
       //   `<b>Location:</b> ${markerData.locationName}<br>
       //   <b>Type:</b> ${markerData.reportType}<br>
@@ -256,13 +354,13 @@ function editMarker(index) {
       // );
 
       // update the status in the table row
-      const tableRow = document.querySelectorAll('table tr')[index + 1]; 
+      const tableRow = document.querySelectorAll('table tr')[index + 1];
       tableRow.cells[3].innerText = newStatus;
 
       alert("Marker updated successfully.");
-      
+
       // close the modal after editing
-      closeModal(); 
+      closeModal();
     }
   } else {
     alert("Edit canceled.");
@@ -272,14 +370,14 @@ function editMarker(index) {
 // function to delete a marker (similar password checker as editMarker)
 function deleteMarker(index) {
   // get the marker data
-  const markerData = locationData[index];  
+  const markerData = locationData[index];
   // get the password if set for the marker
-  const savedPassword = markerData.markerPassword;  
+  const savedPassword = markerData.markerPassword;
 
   // if no password exists prompt the user to make one
   if (!savedPassword) {
     createPassword();
-  } 
+  }
   else {
     // if a password is set, ask the user to enter it
     const enteredPassword = CryptoJS.MD5(prompt("Enter password to delete:")).toString();
@@ -293,21 +391,21 @@ function deleteMarker(index) {
   if (deleteConfirmed) {
     // we need to consider 3 cases
     // remove the marker from the map
-    map.removeLayer(markers[index]);  
+    map.removeLayer(markers[index]);
     // remove the marker from the markers array
-    markers.splice(index, 1);  
+    markers.splice(index, 1);
     // remove the marker data from the locationData array
-    locationData.splice(index, 1);  
+    locationData.splice(index, 1);
 
     // Remove the corresponding row from the table
     const table = document.querySelector('table');
-    table.deleteRow(index + 1); 
+    table.deleteRow(index + 1);
 
     // debug
     alert("Marker deleted successfully.");
 
     // close the modal (the details) after deletion
-    closeModal();  
+    closeModal();
   }
 }
 
@@ -322,17 +420,17 @@ detailPopup.id = 'detailPopup';
 document.body.appendChild(detailPopup);
 
 function showPopup() {
-    popupForm.style.display = 'block';
-    overlay.style.display = 'block';
+  popupForm.style.display = 'block';
+  overlay.style.display = 'block';
 }
 
 function hidePopup() {
-    popupForm.style.display = 'none';
-    overlay.style.display = 'none';
+  popupForm.style.display = 'none';
+  overlay.style.display = 'none';
 }
 
 function showDetails(request) {
-    detailPopup.innerHTML = `
+  detailPopup.innerHTML = `
         <h3>Request Details</h3>
         <p><strong>Name:</strong> ${request.Name}</p>
         <p><strong>Phone Number:</strong> ${request.PhoneNumber}</p>
@@ -344,72 +442,72 @@ function showDetails(request) {
         <p><strong>Status:</strong> ${request.Status}</p>
         <button onclick="hideDetails()">Close</button>
     `;
-    detailPopup.style.display = 'block';
-    overlay.style.display = 'block';
+  detailPopup.style.display = 'block';
+  overlay.style.display = 'block';
 }
 
 function hideDetails() {
-    detailPopup.style.display = 'none';
-    overlay.style.display = 'none';
+  detailPopup.style.display = 'none';
+  overlay.style.display = 'none';
 }
 
 
 function renderTable() {
-    // Clear the table first
-    tableBody.innerHTML = '';
+  // Clear the table first
+  tableBody.innerHTML = '';
 
-    // Add rows for each request
-    requests.forEach(request => {
-        const row = document.createElement('tr');
-        row.style.cursor = 'pointer'; // Make rows clickable
+  // Add rows for each request
+  requests.forEach(request => {
+    const row = document.createElement('tr');
+    row.style.cursor = 'pointer'; // Make rows clickable
 
-        for (const key in request) {
-            const cell = document.createElement('td');
-            if (key === 'Picture') {
-                const img = document.createElement('img');
-                img.src = request[key];
-                img.alt = 'Request Image';
-                img.style.width = '50px';
-                img.style.height = '50px';
-                cell.appendChild(img);
-            } else {
-                cell.textContent = request[key];
-            }
-            row.appendChild(cell);
-        }
+    for (const key in request) {
+      const cell = document.createElement('td');
+      if (key === 'Picture') {
+        const img = document.createElement('img');
+        img.src = request[key];
+        img.alt = 'Request Image';
+        img.style.width = '50px';
+        img.style.height = '50px';
+        cell.appendChild(img);
+      } else {
+        cell.textContent = request[key];
+      }
+      row.appendChild(cell);
+    }
 
-        // Add click event listener to the row
-        row.addEventListener('click', () => showDetails(request));
-        tableBody.appendChild(row);
-    });
+    // Add click event listener to the row
+    row.addEventListener('click', () => showDetails(request));
+    tableBody.appendChild(row);
+  });
 }
 
 function addRequest() {
-    const name = document.getElementById('nameInput').value;
-    const phone = document.getElementById('phoneInput').value;
-    const type = document.getElementById('typeInput').value;
-    const location = document.getElementById('locationInput').value;
-    const picture = document.getElementById('pictureInput').value;
-    const comments = document.getElementById('commentsInput').value;
+  const name = document.getElementById('nameInput').value;
+  const phone = document.getElementById('phoneInput').value;
+  const type = document.getElementById('typeInput').value;
+  const location = document.getElementById('locationInput').value;
+  const picture = document.getElementById('pictureInput').value;
+  const comments = document.getElementById('commentsInput').value;
 
-    const time = new Date().toLocaleString(); // Formats the date and time as a string
-    const status = 'Open'; // Default status is 'Open'
+  const time = new Date().toLocaleString(); // Formats the date and time as a string
+  const status = 'Open'; // Default status is 'Open'
 
-    // Add the new request to the array
-    requests.push({
-        Name: name,
-        PhoneNumber: phone,
-        Type: type,
-        Location: location,
-        Picture: picture,
-        Comments: comments,
-        Time: time,
-        Status: status
-    });
+  // Add the new request to the array
+  requests.push({
+    Name: name,
+    PhoneNumber: phone,
+    Type: type,
+    Location: location,
+    Picture: picture,
+    Comments: comments,
+    Time: time,
+    Status: status
+  });
 
-    // Hide the popup and re-render the table
-    hidePopup();
-    renderTable();
+  // Hide the popup and re-render the table
+  hidePopup();
+  renderTable();
 }
 
 // Initial render
@@ -422,7 +520,7 @@ function createPassword() {
   newPassword = newPassword.toString();
   if (newPassword) {
     // save the newly created password
-    
+
     //markerData.markerPassword = newPassword;  
     return newPassword;
   } else {
@@ -437,13 +535,13 @@ function admin() {
   } else {
     logout();
   }
- 
+
   const button = document.getElementById('admin');
   if (viewOnly) {
     // TODO: maybe add images
-    button.innerHTML = '<img src="cant_addmarker.png" alt="Log in">'; 
+    button.innerHTML = '<img src="cant_addmarker.png" alt="Log in">';
   } else {
-    button.innerHTML = '<img src="addmarker.png" alt="Log Out">'; 
+    button.innerHTML = '<img src="addmarker.png" alt="Log Out">';
   }
 }
 function login() {
@@ -468,7 +566,7 @@ function logout() {
 }
 document.getElementById('admin').addEventListener('click', admin);
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   viewOnly = true;
   changeMode();
 });
@@ -482,12 +580,12 @@ function changeMode() {
     document.body.classList.add('dark');
     console.log("Dark mode");
   } else {
-      // Light mode
-      document.body.classList.remove('dark');
-      document.body.classList.add('light');
-      console.log("Light mode");
+    // Light mode
+    document.body.classList.remove('dark');
+    document.body.classList.add('light');
+    console.log("Light mode");
   }
 }
-btn.addEventListener('change', function() {
+btn.addEventListener('change', function () {
   changeMode();
 });
