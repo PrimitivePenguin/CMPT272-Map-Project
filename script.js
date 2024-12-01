@@ -452,7 +452,7 @@ function hideDetails() {
 }
 
 
-function renderTable() {
+function renderTable(requests) {
   // Clear the table first
   tableBody.innerHTML = '';
 
@@ -507,11 +507,11 @@ function addRequest() {
 
   // Hide the popup and re-render the table
   hidePopup();
-  renderTable();
+  renderTable(requests);
 }
 
 // Initial render
-renderTable();
+renderTable(requests);
 
 // password stuff
 function createPassword() {
@@ -588,4 +588,47 @@ function changeMode() {
 }
 btn.addEventListener('change', function () {
   changeMode();
+});
+
+let currentSort = { column: '', order: 'asc' };
+
+function sortRequests(sortBy, order = 'asc') {
+  const compare = (a, b) => {
+      if (sortBy === 'Time') {
+          const timeA = new Date(a.Time);
+          const timeB = new Date(b.Time);
+          return order === 'asc' ? timeA - timeB : timeB - timeA;
+      } else if (sortBy === 'PhoneNumber') {
+          return order === 'asc' ? a.PhoneNumber - b.PhoneNumber : b.PhoneNumber - a.PhoneNumber;
+      } else {
+          const valA = a[sortBy].toString().toLowerCase();
+          const valB = b[sortBy].toString().toLowerCase();
+          if (valA < valB) return order === 'asc' ? -1 : 1;
+          if (valA > valB) return order === 'asc' ? 1 : -1;
+          return 0;
+      }
+  };
+
+  return requests.sort(compare);
+}
+
+document.querySelectorAll('#requestsTable th').forEach(th => {
+  th.addEventListener('click', () => {
+      const column = th.getAttribute('data-sort');
+      let order = 'asc';
+
+      // Toggle sorting order
+      if (currentSort.column === column && currentSort.order === 'asc') {
+          order = 'desc';
+      }
+
+      // Update the current sorting state
+      currentSort = { column, order };
+
+      // Sort the requests based on the column and order
+      const sortedRequests = sortRequests(column, order);
+
+      // Render the sorted table
+      renderTable(sortedRequests);
+  });
 });
