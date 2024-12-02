@@ -197,6 +197,10 @@ th {
     cursor: pointer;
 }
 
+th:hover::after {
+    content: attr(title);
+}
+
 body.dark th {
     padding: 8px;
     text-align: left;
@@ -229,6 +233,33 @@ tr:hover {
 }
 body.dark tr:hover {
     background-color: #555;
+}
+
+p {
+    font-size: 0.85rem;
+}
+
+.tooltip {
+    visibility: hidden;
+    position: absolute;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    z-index: 10;
+    white-space: nowrap;
+    bottom: 100%; /* Adjust position to appear above the header */
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 5px;
+}
+
+th:hover .tooltip {
+    visibility: visible;
+    transform: translateY(-10px);
+    transition: visibility 0.3s ease, transform 0.3s ease;
 }
 
 .highlight {

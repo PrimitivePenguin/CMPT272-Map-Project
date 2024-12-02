@@ -1,4 +1,4 @@
-// Group: Alexander, Alex, Camille, Emily, Discord
+// Group: Alexander, Alex, Camille, Emily, Josevan
 // Date: December 3rd, 2024
 
 /* 
@@ -592,7 +592,7 @@ btn.addEventListener('change', function () {
 
 let currentSort = { column: '', order: 'asc' };
 
-function sortRequests(sortBy, order = 'asc') {
+function sortLocationData(sortBy, order = 'asc') {
   const compare = (a, b) => {
       if (sortBy === 'Time') {
           const timeA = new Date(a.Time);
@@ -620,7 +620,7 @@ function sortRequests(sortBy, order = 'asc') {
       return 0;
   };
 
-  return requests.sort(compare);
+  return locationData.sort(compare);
 }
 
 document.querySelectorAll('#requestsTable th').forEach(th => {
@@ -637,7 +637,7 @@ document.querySelectorAll('#requestsTable th').forEach(th => {
       currentSort = { column, order };
 
       // Sort the requests based on the column and order
-      const sortedRequests = sortRequests(column, order);
+      const sortedRequests = sortLocationData(column, order);
 
       // Render the sorted table
       renderTable(sortedRequests);
