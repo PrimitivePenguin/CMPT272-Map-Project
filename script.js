@@ -206,14 +206,11 @@ function renderLocalTable() {
         <td>${entry.reportType}</td>
         <td>${entry.locationName}</td>
         <td>${entry.imageURL}</td>
-<<<<<<< HEAD
-=======
+        <td>${entry.timeReported}</td>
+        <td>${entry.status}</td>
         <td>
           <span onclick="viewDetails(${index})" style="cursor:pointer;color:blue;text-decoration:underline;">View Info</span> (${hasMoreInfo})
         </td>
->>>>>>> e21b079d27e69c3eccf753c88c4d5603faa665ee
-        <td>${entry.timeReported}</td>
-        <td>${entry.status}</td>
       `;
       document.querySelector('#requestsTable tbody').appendChild(tableRow);
 
@@ -342,7 +339,7 @@ function editMarker(index) {
 
       // update the status in the table row
       const tableRow = document.querySelectorAll('table tr')[index + 1];
-      tableRow.cells[3].innerText = newStatus;
+      tableRow.cells[6].innerText = newStatus;
 
       alert("Marker updated successfully.");
 
