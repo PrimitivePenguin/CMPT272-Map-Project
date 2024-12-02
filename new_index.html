@@ -19,7 +19,8 @@
 </head>
 <body>
   <div>
-    <h1 id="title">Map</h1>
+    <h1 id="title">Emergency Reporting system</h1>
+    <p>Click on the map to add or view emergency locations. Manage requests below the map.</p>
   </div>
   <div class="dm_ip_check">
     <input type="checkbox" id="modeChange">
@@ -55,14 +56,14 @@
       <table id="requestsTable">
         <thead>
             <tr>
-                <th data-sort="Name">Name</th>
-                <th data-sort="PhoneNumber">Phone Number</th>
-                <th data-sort="Type">Type</th>
-                <th data-sort="Location">Location</th>
-                <th data-sort="Picture">Picture</th>
-                <th data-sort="Comments">Comments</th>
-                <th data-sort="Time">Time</th>
-                <th data-sort="Status">Status</th>
+                <th data-sort="Name">Name <span class="tooltip">Click to sort</span></th>
+                <th data-sort="PhoneNumber">Phone Number <span class="tooltip">Click to sort</span></th>
+                <th data-sort="Type">Type <span class="tooltip">Click to sort</span></th>
+                <th data-sort="Location">Location <span class="tooltip">Click to sort</span></th>
+                <th data-sort="Picture">Picture <span class="tooltip">Click to sort</span></th>
+                <th data-sort="Comments">Comments <span class="tooltip">Click to sort</span></th>
+                <th data-sort="Time">Time <span class="tooltip">Click to sort</span></th>
+                <th data-sort="Status">Status <span class="tooltip">Click to sort</span></th>
             </tr>
         </thead>
         <tbody>
@@ -71,6 +72,15 @@
     </table>
 
   </div>
+
+  <footer>
+    © 2024 Emergency Reporting System. Designed by Group 26 
+  </footer>
+  
   <script src="script.js"></script>
 </body>
 </html>
+
+<footer>
+    © 2024 Emergency Reporting System. Designed by Group 26 
+  </footer>
