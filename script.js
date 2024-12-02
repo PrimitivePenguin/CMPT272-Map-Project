@@ -207,6 +207,7 @@ function renderLocalTable() {
         <td>${entry.reportType}</td>
         <td>${entry.locationName}</td>
         <td>${entry.imageURL}</td>
+        <td>${entry.moreInfo}</td>
         <td>${entry.timeReported}</td>
         <td>${entry.status}</td>
         <td>
