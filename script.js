@@ -51,6 +51,7 @@ function onMapClick(e) {
     <div class="popup-content">
       <form id="locationForm">
         <label>Reported By: <input type="text" id="reportedBy" placeholder="Your Name"></label><br>
+        <label>Phone Number: <input type="text" id="phoneNumber" placeholder="e.g. 012-345-6789" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"></label><br>
         <label>Location Name: <input type="text" id="locationName" placeholder="Enter location (e.g., SFU)"></label><br>
         <label>Type: <input type="text" id="reportType" placeholder="Enter type (e.g., shooting, medical)"></label><br>
         <label>Status: 
@@ -78,7 +79,7 @@ function onMapClick(e) {
     event.preventDefault();
     // retrieve form data
     const reportedBy = document.getElementById('reportedBy').value;
-    const phone = document.getElementById('phone').value;
+    const phoneNumber = document.getElementById('phoneNumber').value;
     const locationName = document.getElementById('locationName').value;
     const reportType = document.getElementById('reportType').value;
     const status = 'Open';
@@ -123,12 +124,14 @@ function onMapClick(e) {
     const hasMoreInfo = moreInfo ? '✅' : '❎';
     tableRow.innerHTML = `
       <td>${reportedBy}</td>
-      <td>${phone}</td>
+      <td>${phoneNumber}</td>
       <td>${reportType}</td>
       <td>${locationName}</td>
       <td>${moreInfo}</td>
       <td>${timeReported}</td>
-      <td>${status}</td>
+      <td>${status}</td><td>
+        <span onclick="viewDetails()" style="cursor:pointer;color:blue;text-decoration:underline;">View Info</span> (${hasMoreInfo})
+      </td>
     `;
 
     //Add click event listener to the row 
@@ -204,10 +207,9 @@ function renderLocalTable() {
         <td>${entry.phoneNumber}</td>
         <td>${entry.reportType}</td>
         <td>${entry.locationName}</td>
-        <td>${entry.imageURL}</td>
+        <td>${entry.moreInfo}</td>
         <td>${entry.timeReported}</td>
-        <td>${entry.status}</td>
-        <td>
+        <td>${entry.status}</td><td>
           <span onclick="viewDetails(${index})" style="cursor:pointer;color:blue;text-decoration:underline;">View Info</span> (${hasMoreInfo})
         </td>
       `;
@@ -375,8 +377,8 @@ function deleteMarker(index) {
     // Remove the corresponding row from the table
     const table = document.querySelector('#requestsTable');
     if (!table) {
-        console.error("Table not found. Ensure #requestsTable exists in the DOM.");
-    }    
+      console.error("Table not found. Ensure #requestsTable exists in the DOM.");
+    }
     table.deleteRow(index + 1);
 
     // debug
@@ -417,19 +419,19 @@ let currentSort = { column: '', order: 'asc' };
 
 function sortLocationData(sortBy, order = 'asc') {
   const compare = (a, b) => {
-      if (sortBy === 'Time') {
-          const timeA = new Date(a.Time);
-          const timeB = new Date(b.Time);
-          return order === 'asc' ? timeA - timeB : timeB - timeA;
-      } else if (sortBy === 'PhoneNumber') {
-          return order === 'asc' ? a.PhoneNumber - b.PhoneNumber : b.PhoneNumber - a.PhoneNumber;
-      } else {
-          const valA = a[sortBy].toString().toLowerCase();
-          const valB = b[sortBy].toString().toLowerCase();
-          if (valA < valB) return order === 'asc' ? -1 : 1;
-          if (valA > valB) return order === 'asc' ? 1 : -1;
-          return 0;
-      }
+    if (sortBy === 'Time') {
+      const timeA = new Date(a.Time);
+      const timeB = new Date(b.Time);
+      return order === 'asc' ? timeA - timeB : timeB - timeA;
+    } else if (sortBy === 'PhoneNumber') {
+      return order === 'asc' ? a.PhoneNumber - b.PhoneNumber : b.PhoneNumber - a.PhoneNumber;
+    } else {
+      const valA = a[sortBy].toString().toLowerCase();
+      const valB = b[sortBy].toString().toLowerCase();
+      if (valA < valB) return order === 'asc' ? -1 : 1;
+      if (valA > valB) return order === 'asc' ? 1 : -1;
+      return 0;
+    }
   };
 
   return locationData.sort(compare);
@@ -437,22 +439,22 @@ function sortLocationData(sortBy, order = 'asc') {
 
 document.querySelectorAll('#requestsTable th').forEach(th => {
   th.addEventListener('click', () => {
-      const column = th.getAttribute('data-sort');
-      let order = 'asc';
+    const column = th.getAttribute('data-sort');
+    let order = 'asc';
 
-      // Toggle sorting order
-      if (currentSort.column === column && currentSort.order === 'asc') {
-          order = 'desc';
-      }
+    // Toggle sorting order
+    if (currentSort.column === column && currentSort.order === 'asc') {
+      order = 'desc';
+    }
 
-      // Update the current sorting state
-      currentSort = { column, order };
+    // Update the current sorting state
+    currentSort = { column, order };
 
-      // Sort the requests based on the column and order
-      const sortedRequests = sortLocationData(column, order);
+    // Sort the requests based on the column and order
+    const sortedRequests = sortLocationData(column, order);
 
-      // Render the sorted table
-      renderTable(sortedRequests);
+    // Render the sorted table
+    renderTable(sortedRequests);
   });
 });
 
@@ -468,21 +470,21 @@ function updateVisibleRows() {
 
   // hide all table rows by default (AT THE START of each iteration)
   tableRows.forEach(row => {
-      row.style.display = 'none';
+    row.style.display = 'none';
   });
 
   // iterate through markers and show corresponding rows if marker is visible
   markers.forEach((marker, index) => {
-      const markerLatLng = marker.getLatLng();
-      const isVisible = bounds.contains(markerLatLng); // check if marker is within bounds
-      console.log(`Marker ${index} (${markerLatLng}): visible? ${isVisible}`);
+    const markerLatLng = marker.getLatLng();
+    const isVisible = bounds.contains(markerLatLng); // check if marker is within bounds
+    console.log(`Marker ${index} (${markerLatLng}): visible? ${isVisible}`);
 
-      const row = tableRows[index];
-      if (row) {
-          row.style.display = isVisible ? '' : 'none'; // Show or hide row
-      } else {
-          console.warn(`No corresponding row found for marker ${index}.`);
-      }
+    const row = tableRows[index];
+    if (row) {
+      row.style.display = isVisible ? '' : 'none'; // Show or hide row
+    } else {
+      console.warn(`No corresponding row found for marker ${index}.`);
+    }
   });
 }
 
@@ -496,9 +498,9 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
   // Initialize the map and add listeners here
   map.whenReady(() => {
-      console.log("Map is ready.");
-      map.on('move', updateVisibleRows);
-      map.on('moveend', updateVisibleRows);
-      map.on('zoomend', updateVisibleRows);
+    console.log("Map is ready.");
+    map.on('move', updateVisibleRows);
+    map.on('moveend', updateVisibleRows);
+    map.on('zoomend', updateVisibleRows);
   });
 });
