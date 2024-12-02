@@ -176,8 +176,20 @@ body.dark .modal-content {
     align-items: right;
     border: none;
     background-color: transparent;
-    color: white;
+    color: black;
 }
+.close:hover {
+    color: #444;
+}
+
+body.dark .close {
+    color: #ddd;
+}
+body.dark .close:hover {
+    color: #fff;
+}
+
+
 .modal-body {
     display: flex;
     flex-direction: column;
@@ -193,11 +205,12 @@ table {
     margin-left: auto;
     margin-bottom: 50px;
     text-align: center;
-    background-color: #fff;
+    background-color: transparent;
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
 
 th {
     padding: 8px;
