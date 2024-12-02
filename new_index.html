@@ -10,32 +10,77 @@
   crossorigin=""/>
   <!--css-->
   <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="cat.jpg" type="image/x-icon">
   <!--MD5 for passcode storage-->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1-crypto-js.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
   integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
   crossorigin=""></script>
 </head>
 <body>
   <div>
-    <h1 id="title">Map</h1>
-    <p>Text</p>
+    <h1 id="title">Emergency Reporting system</h1>
+    <p>Click on the map to add or view emergency locations. Manage requests below the map.</p>
+  </div>
+  <div class="dm_ip_check">
+    <input type="checkbox" id="modeChange">
+    <label for="modeChange">Dark Mode</label>
   </div>
   <div>
-    <button id="toggleViewOnlyBtn">Toggle View-Only Mode</button>  
+    <button id="admin">Log In</button>
   </div>
   <div id="map"></div>
   <div id="list">
-    <h1>List</h1>
-    <table>
-      <tr>
-        <th>Location</th>
-        <th>Type</th>
-        <th>Time Reported</th>
-        <th>Status</th>
-      </tr>
-    </table>
+    <h1>Emergency Requests List</h1>
+    <div id="overlay"></div>
+    <div id="popupForm">
+      <label>
+          Name: <input type="text" id="nameInput">
+      </label>
+      <label>
+          Phone Number: <input type="text" id="phoneInput">
+      </label>
+      <label>
+          Type: <input type="text" id="typeInput">
+      </label>
+      <label>
+          Location: <input type="text" id="locationInput">
+      </label>
+      <label>
+          Picture URL: <input type="text" id="pictureInput">
+      </label>
+      <label>
+          Comments: <input type="text" id="commentsInput">
+      </label>
   </div>
+      <table id="requestsTable">
+        <thead>
+            <tr>
+                <th data-sort="Name">Name <span class="tooltip">Click to sort</span></th>
+                <th data-sort="PhoneNumber">Phone Number <span class="tooltip">Click to sort</span></th>
+                <th data-sort="Type">Type <span class="tooltip">Click to sort</span></th>
+                <th data-sort="Location">Location <span class="tooltip">Click to sort</span></th>
+                <th data-sort="Picture">Picture <span class="tooltip">Click to sort</span></th>
+                <th data-sort="Comments">Comments <span class="tooltip">Click to sort</span></th>
+                <th data-sort="Time">Time <span class="tooltip">Click to sort</span></th>
+                <th data-sort="Status">Status <span class="tooltip">Click to sort</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be added dynamically -->
+        </tbody>
+    </table>
+
+  </div>
+
+  <footer>
+    © 2024 Emergency Reporting System. Designed by Group 26 
+  </footer>
+  
   <script src="script.js"></script>
 </body>
 </html>
+
+<footer>
+    © 2024 Emergency Reporting System. Designed by Group 26 
+  </footer>
