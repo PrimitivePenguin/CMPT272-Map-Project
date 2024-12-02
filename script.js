@@ -325,16 +325,16 @@ function editMarker(index) {
           // Update the status in the corresponding table row
           const tableRows = document.querySelectorAll('#requestsTable tbody tr');
           if (tableRows[index]) {
-              tableRows[index].cells[7].innerText = newStatus;
+              tableRows[index].cells[6].innerText = newStatus;
           }
 
           alert("Marker updated successfully.");
 
-      // update the status in the table row
-      const tableRow = document.querySelectorAll('table tr')[index + 1];
-      tableRow.cells[6].innerText = newStatus;
+      // // update the status in the table row
+      // const tableRow = document.querySelectorAll('table tr')[index + 1];
+      // tableRow.cells[6].innerText = newStatus;
 
-      alert("Marker updated successfully.");
+      // alert("Marker updated successfully.");
 
       // close the modal after editing
       closeModal();
