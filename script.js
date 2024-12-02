@@ -206,9 +206,6 @@ function renderLocalTable() {
         <td>${entry.imageURL}</td>
         <td>${entry.timeReported}</td>
         <td>${entry.status}</td>
-        <td>
-          <span onclick="viewDetails(${index})" style="cursor:pointer;color:blue;text-decoration:underline;">View Info</span> (${hasMoreInfo})
-        </td>
       `;
       document.querySelector('#requestsTable tbody').appendChild(tableRow);
 
