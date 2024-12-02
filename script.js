@@ -66,6 +66,8 @@ function onMapClick(e) {
   const formHTML = `
     <div class="popup-content">
       <form id="locationForm">
+        <label>Reported By: <input type="text" id="reportedBy" placeholder="Your Name"></label><br>
+        <label>Phone Number: <input type="text" id="phoneNumber" placeholder="e.g. 012-345-6789" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"></label><br>
         <label>Location Name: <input type="text" id="locationName" placeholder="Enter location (e.g., SFU)"></label><br>
         <label>Type: <input type="text" id="reportType" placeholder="Enter type (e.g., shooting, medical)"></label><br>
         <label>Status: 
@@ -85,11 +87,15 @@ function onMapClick(e) {
   const popup = L.popup({
     shadowSize: [50, 50]
   }).setLatLng(e.latlng).setContent(formHTML).openOn(map);
+
+  console.log(e.latlng);
   
   // handle form submission to add marker data
   document.getElementById('locationForm').onsubmit = function(event) {
     event.preventDefault();
     // retrieve form data
+    const reportedBy = document.getElementById('reportedBy').value;
+    const phoneNumber = document.getElementById('phoneNumber').value;
     const locationName = document.getElementById('locationName').value;
     const reportType = document.getElementById('reportType').value;
     const status = document.getElementById('status').value;
@@ -98,7 +104,7 @@ function onMapClick(e) {
     const imageURL = imageFile ? URL.createObjectURL(imageFile) : null; 
 
     // add location data to the array locationData
-    const locationEntry = { locationName, reportType, status, timeReported, moreInfo, imageURL, markerPassword: null };
+    const locationEntry = {reportedBy, phoneNumber, locationName, reportType, status, timeReported, moreInfo, imageURL, markerPassword: null };
     locationData.push(locationEntry);
 
     // create a marker on the map
@@ -118,14 +124,21 @@ function onMapClick(e) {
     const tableRow = document.createElement('tr');
     const hasMoreInfo = moreInfo ? '✅' : '❎';
     tableRow.innerHTML = `
-      <td>${locationName}</td>
+      <td>${reportedBy}</td>
+      <td>${phoneNumber}</td>
       <td>${reportType}</td>
+      <td>${locationName}</td>
+      <td>${moreInfo}</td>
       <td>${timeReported}</td>
       <td>${status}</td>
       <td>
         <span onclick="viewDetails(${markerIndex})" style="cursor:pointer;color:blue;text-decoration:underline;">View Info</span> (${hasMoreInfo})
       </td>
     `;
+
+    //Add click event listener to the row 
+    tableRow.addEventListener('click', () => viewDetails(markerIndex));
+
     // find first instance of table in html file
     document.querySelector('table').appendChild(tableRow);
 
@@ -312,129 +325,4 @@ function deleteMarker(index) {
   }
 }
 
-//Emergency Request Table:
-const tableBody = document.querySelector('#requestsTable tbody');
-const popupForm = document.querySelector('#popupForm');
-const overlay = document.querySelector('#overlay');
-const detailPopup = document.createElement('div');
-const closeRequestPopup = document.createElement('div');
-
-// Create and style the detail popup dynamically
-detailPopup.id = 'detailPopup';
-document.body.appendChild(detailPopup);
-
-// Create and style close request popup
-closeRequestPopup.id = 'detailPopup'
-document.body.appendChild(closeRequestPopup);
-
-function showPopup() {
-    popupForm.style.display = 'block';
-    overlay.style.display = 'block';
-}
-
-function hidePopup() {
-    popupForm.style.display = 'none';
-    overlay.style.display = 'none';
-}
-
-function showDetails(request) {
-    detailPopup.innerHTML = `
-        <h3>Request Details</h3>
-        <p><strong>Name:</strong> ${request.Name}</p>
-        <p><strong>Phone Number:</strong> ${request.PhoneNumber}</p>
-        <p><strong>Type:</strong> ${request.Type}</p>
-        <p><strong>Location:</strong> ${request.Location}</p>
-        <p><strong>Picture:</strong> <img src="${request.Picture}" alt="Request Image" style="width: 100px; height: 100px;"></p>
-        <p><strong>Comments:</strong> ${request.Comments}</p>
-        <p><strong>Time:</strong> ${request.Time}</p>
-        <p><strong>Status:</strong> ${request.Status}</p>
-        <button onclick="hideDetails()">Close</button>
-        <button onclick="showCloseReport()">Close Report</button>
-    `;
-    detailPopup.style.display = 'block';
-    overlay.style.display = 'block';
-}
-
-function hideDetails() {
-    detailPopup.style.display = 'none';
-    overlay.style.display = 'none';
-}
-
-function showcloseReport(){
-    closReportPopup.innerHTML = `
-
-        <h3>Password Stuff<h3>
-        <button onclick="hideCloseReport">Close</button>
-    
-    `
-    closeReportPopup.style.display = 'block';
-    overlay.style.display = 'block';
-}
-
-
-function hideCloseReport(){
-    closeReportPopup.style.display = 'none';
-    overlay.style.display = 'none';
-}
-
-function renderTable() {
-    // Clear the table first
-    tableBody.innerHTML = '';
-
-    // Add rows for each request
-    requests.forEach(request => {
-        const row = document.createElement('tr');
-        row.style.cursor = 'pointer'; // Make rows clickable
-
-        for (const key in request) {
-            const cell = document.createElement('td');
-            if (key === 'Picture') {
-                const img = document.createElement('img');
-                img.src = request[key];
-                img.alt = 'Request Image';
-                img.style.width = '50px';
-                img.style.height = '50px';
-                cell.appendChild(img);
-            } else {
-                cell.textContent = request[key];
-            }
-            row.appendChild(cell);
-        }
-
-        // Add click event listener to the row
-        row.addEventListener('click', () => showDetails(request));
-        tableBody.appendChild(row);
-    });
-}
-
-function addRequest() {
-    const name = document.getElementById('nameInput').value;
-    const phone = document.getElementById('phoneInput').value;
-    const type = document.getElementById('typeInput').value;
-    const location = document.getElementById('locationInput').value;
-    const picture = document.getElementById('pictureInput').value;
-    const comments = document.getElementById('commentsInput').value;
-
-    const time = new Date().toLocaleString(); // Formats the date and time as a string
-    const status = 'Open'; // Default status is 'Open'
-
-    // Add the new request to the array
-    requests.push({
-        Name: name,
-        PhoneNumber: phone,
-        Type: type,
-        Location: location,
-        Picture: picture,
-        Comments: comments,
-        Time: time,
-        Status: status
-    });
-
-    // Hide the popup and re-render the table
-    hidePopup();
-    renderTable();
-}
-
-// Initial render
-renderTable();
 

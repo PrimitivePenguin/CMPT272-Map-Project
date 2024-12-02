@@ -27,31 +27,6 @@
   <div id="map"></div>
   <div id="list">
     <h1>Emergency Requests List</h1>
-    <button id="addRequest" onclick="showPopup()">+ Add Request</button>
-    <div id="overlay"></div>
-    <div id="popupForm">
-      <h3>Add New Request</h3>
-      <label>
-          Name: <input type="text" id="nameInput">
-      </label>
-      <label>
-          Phone Number: <input type="text" id="phoneInput">
-      </label>
-      <label>
-          Type: <input type="text" id="typeInput">
-      </label>
-      <label>
-          Location: <input type="text" id="locationInput">
-      </label>
-      <label>
-          Picture URL: <input type="text" id="pictureInput">
-      </label>
-      <label>
-          Comments: <input type="text" id="commentsInput">
-      </label>
-      <button onclick="addRequest()">Add</button> 
-      <button onclick="hidePopup()">Cancel</button>
-  </div>
       <table id="requestsTable">
         <thead>
             <tr>
@@ -59,10 +34,10 @@
                 <th>Phone Number</th>
                 <th>Type</th>
                 <th>Location</th>
-                <th>Picture</th>
                 <th>Comments</th>
                 <th>Time</th>
                 <th>Status</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -71,7 +46,6 @@
     </table>
 
   </div>
-  <script src="requests.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
