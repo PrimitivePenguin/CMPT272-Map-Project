@@ -32,17 +32,38 @@
   <div id="map"></div>
   <div id="list">
     <h1>Emergency Requests List</h1>
+    <div id="overlay"></div>
+    <div id="popupForm">
+      <label>
+          Name: <input type="text" id="nameInput">
+      </label>
+      <label>
+          Phone Number: <input type="text" id="phoneInput">
+      </label>
+      <label>
+          Type: <input type="text" id="typeInput">
+      </label>
+      <label>
+          Location: <input type="text" id="locationInput">
+      </label>
+      <label>
+          Picture URL: <input type="text" id="pictureInput">
+      </label>
+      <label>
+          Comments: <input type="text" id="commentsInput">
+      </label>
+  </div>
       <table id="requestsTable">
         <thead>
             <tr>
-                <th>Reported By</th>
-                <th>Phone Number</th>
-                <th>Type</th>
-                <th>Location</th>
-                <th>Comments</th>
-                <th>Time</th>
-                <th>Status</th>
-                <th></th>
+                <th data-sort="Name">Name <span class="tooltip">Click to sort</span></th>
+                <th data-sort="PhoneNumber">Phone Number <span class="tooltip">Click to sort</span></th>
+                <th data-sort="Type">Type <span class="tooltip">Click to sort</span></th>
+                <th data-sort="Location">Location <span class="tooltip">Click to sort</span></th>
+                <th data-sort="Picture">Picture <span class="tooltip">Click to sort</span></th>
+                <th data-sort="Comments">Comments <span class="tooltip">Click to sort</span></th>
+                <th data-sort="Time">Time <span class="tooltip">Click to sort</span></th>
+                <th data-sort="Status">Status <span class="tooltip">Click to sort</span></th>
             </tr>
         </thead>
         <tbody>

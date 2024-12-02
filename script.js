@@ -44,15 +44,16 @@ let markers = [];
 /* Functionality */
 // handles map click events to add a new marker with form input
 function onMapClick(e) {
+  if (!viewOnly) {
   // get current timestamp
   const timeReported = new Date().toLocaleString('en-US', { hour12: true });
   // HTML form for capturing marker details
   const formHTML = `
     <div class="popup-content">
       <form id="locationForm">
-        <label>Reported By: <input type="text" id="reportedBy" placeholder="Your Name"></label><br>
-        <label>Location Name: <input type="text" id="locationName" placeholder="Enter location (e.g., SFU)"></label><br>
-        <label>Type: <input type="text" id="reportType" placeholder="Enter type (e.g., shooting, medical)"></label><br>
+        <labe>Name: <input type="text" id="name"></label><br>
+        <label>Location: <input type="text" id="locationName" placeholder="Enter location (e.g., SFU)"></label><br>
+        <label>Type: <input type="text" id="reportType" placeholder="Enter type (e.g., shooting, medical)" required></label><br>        
         <label>Status: 
           <select id="status">
             <option value="open" selected>Open</option>
@@ -77,8 +78,8 @@ function onMapClick(e) {
   document.getElementById('locationForm').onsubmit = function (event) {
     event.preventDefault();
     // retrieve form data
-    const reportedBy = document.getElementById('reportedBy').value;
-    const phone = document.getElementById('phone').value;
+    const name = document.getElementById('name').value;
+    const phone = document.getElementById('phone').value || 'None';
     const locationName = document.getElementById('locationName').value;
     const reportType = document.getElementById('reportType').value;
     const status = 'Open';
@@ -90,9 +91,9 @@ function onMapClick(e) {
 
     if (document.getElementById('passCheck').checked) {
       var pass = createPassword();
-      locationData.push({ reportedBy, phoneNumber, locationName, reportType, status, location, imageURL, moreInfo, timeReported, markerPassword: pass });
+      locationData.push({ name, phone, locationName, reportType, status, location, imageURL, moreInfo, timeReported, markerPassword: pass });
     } else {
-      locationData.push({ reportedBy, phoneNumber, locationName, reportType, status, location, imageURL, moreInfo, timeReported, markerPassword: null });
+      locationData.push({ name, phone, locationName, reportType, status, location, imageURL, moreInfo, timeReported, markerPassword: null });
     }
     console.log(locationData);
     localStorage.setItem("requestsArray", JSON.stringify(locationData));
@@ -122,18 +123,17 @@ function onMapClick(e) {
     const tableRow = document.createElement('tr');
     const hasMoreInfo = moreInfo ? '✅' : '❎';
     tableRow.innerHTML = `
-      <td>${reportedBy}</td>
+      <td>${name}</td>
       <td>${phone}</td>
       <td>${reportType}</td>
       <td>${locationName}</td>
-      <td>${moreInfo}</td>
+      <td>${imageURL}</td>
+      <td>
+      <span onclick="viewDetails(${markerIndex})" style="cursor:pointer;color:blue;text-decoration:underline;">View Info</span> (${hasMoreInfo})
+      </td> 
       <td>${timeReported}</td>
       <td>${status}</td>
     `;
-
-    //Add click event listener to the row 
-    tableRow.addEventListener('click', () => viewDetails(markerIndex));
-
     // find first instance of table in html file
     document.querySelector('#requestsTable tbody').appendChild(tableRow);
     console.log("Row added:", tableRow);
@@ -166,6 +166,8 @@ function onMapClick(e) {
     popup.remove();
   };
   updateVisibleRows();
+
+  }
 }
 
 // Function to render data that was stored in local
@@ -198,18 +200,17 @@ function renderLocalTable() {
     locationData.forEach((entry, index) => {
       const tableRow = document.createElement('tr');
       const hasMoreInfo = entry.moreInfo ? '✅' : '❎';
-
       tableRow.innerHTML = `
-        <td>${entry.reportedBy}</td>
-        <td>${entry.phoneNumber}</td>
+        <td>${entry.name}</td>
+        <td>${entry.phone}</td>
         <td>${entry.reportType}</td>
         <td>${entry.locationName}</td>
         <td>${entry.imageURL}</td>
-        <td>${entry.timeReported}</td>
-        <td>${entry.status}</td>
         <td>
           <span onclick="viewDetails(${index})" style="cursor:pointer;color:blue;text-decoration:underline;">View Info</span> (${hasMoreInfo})
         </td>
+        <td>${entry.timeReported}</td>
+        <td>${entry.status}</td>
       `;
       document.querySelector('#requestsTable tbody').appendChild(tableRow);
 
@@ -249,12 +250,13 @@ function viewDetails(index) {
   const modalHTML = `
     <div id="detailsModal" class="modal">
       <div class="modal-content">
-        <span class="close" onclick="closeModal()">×</span>  <!-- Close button for the modal -->
+
         <div class="modal-header">
           <!-- If an image URL is present, display the image -->
           ${locationEntry.imageURL ? `<img src="${locationEntry.imageURL}" alt="Location Image" style="width: 100%; height: auto;">` : ''}
         </div>
         <div class="modal-body">
+          <button class="close" onclick="closeModal()">×</button>  <!-- Close button for the modal -->
           <!-- Display the location details -->
           <h2>${locationEntry.locationName}</h2>
           <p><b>Type:</b> ${locationEntry.reportType}</p>
@@ -285,23 +287,27 @@ function closeModal() {
 
 // Function to edit the details of a marker
 function editMarker(index) {
+  if (viewOnly) {
+    alert("You do not have permission to edit markers.");
+    return;
+  }
   // get the marker data
   const markerData = locationData[index];
   // get the password if set for the marker
   let savedPassword = markerData.markerPassword;
 
+  
   // if no password is set, prompt the user to create one
-  if (!savedPassword) {
-    const newPassword = prompt("No password set. Please create a new password:");
-    if (newPassword) {
-      // save the new password
-      markerData.markerPassword = newPassword;
-      alert("Password set successfully. You can now edit this marker.");
-    } else {
-      alert("Password creation canceled.");
-      return;
-    }
-  } else {
+  if (savedPassword) {
+    // const newPassword = prompt("No password set. Please create a new password:");
+    // if (newPassword) {
+    //   // save the new password
+    //   markerData.markerPassword = newPassword;
+    //   alert("Password set successfully. You can now edit this marker.");
+    // } else {
+    //   alert("Password creation canceled.");
+    //   return;
+    // }
     // if a password exists just ask the user to enter it
     const enteredPassword = CryptoJS.MD5(prompt("Enter password to edit: ")).tosString();
     if (enteredPassword !== savedPassword) {
@@ -317,15 +323,19 @@ function editMarker(index) {
     if (newStatus) {
       // update the status of the marker
       markerData.status = newStatus;
-      // markers[index].bindPopup(
-      //   `<b>Location:</b> ${markerData.locationName}<br>
-      //   <b>Type:</b> ${markerData.reportType}<br>
-      //   <b>Status:</b> ${newStatus}<br>
-      //   <b>Reported:</b> ${markerData.timeReported}<br>
-      //   <button onclick="viewDetails(${index})">More Info</button>
-      //   <button onclick="editMarker(${index})">Edit</button>
-      //   <button onclick="deleteMarker(${index})">Delete</button>`
-      // );
+
+      // new popup
+      
+
+      markers[index].bindPopup(
+        `<b>Location:</b> ${markerData.locationName}<br>
+        <b>Type:</b> ${markerData.reportType}<br>
+        <b>Status:</b> ${newStatus}<br>
+        <b>Reported:</b> ${markerData.timeReported}<br>
+        <button onclick="viewDetails(${index})">More Info</button>
+        <button onclick="editMarker(${index})">Edit</button>
+        <button onclick="deleteMarker(${index})">Delete</button>`
+      );
 
       // update the status in the table row
       const tableRow = document.querySelectorAll('table tr')[index + 1];
@@ -344,52 +354,181 @@ function editMarker(index) {
 
 // function to delete a marker (similar password checker as editMarker)
 function deleteMarker(index) {
-  // get the marker data
-  const markerData = locationData[index];
-  // get the password if set for the marker
-  const savedPassword = markerData.markerPassword;
+  if (viewOnly) {
+    alert("You do not have permission to delete markers.");
+    return;
+  } else {
+    // get the marker data
+    const markerData = locationData[index];
+    // get the password if set for the marker
+    const savedPassword = markerData.markerPassword;
 
-  // if no password exists prompt the user to make one
-  if (!savedPassword) {
-    createPassword();
-  }
-  else {
-    // if a password is set, ask the user to enter it
-    const enteredPassword = CryptoJS.MD5(prompt("Enter password to delete:")).toString();
-    if (enteredPassword !== savedPassword) {
-      alert("Incorrect password. Deletion canceled.");
-      return;
+    // if no password exists prompt the user to make one
+    if (savedPassword) {
+      // if a password is set, ask the user to enter it
+      const enteredPassword = CryptoJS.MD5(prompt("Enter password to delete:")).toString();
+      if (enteredPassword !== savedPassword) {
+        alert("Incorrect password. Deletion canceled.");
+        return;
+      }
     }
+    // ask the user to confirm if they want to delete the marker
+    const deleteConfirmed = confirm("Are you sure you want to delete this marker?");
+    if (deleteConfirmed) {
+      // we need to consider 3 cases
+      // remove the marker from the map
+      map.removeLayer(markers[index]);
+      // remove the marker from the markers array
+      markers.splice(index, 1);
+      // remove the marker data from the locationData array
+      locationData.splice(index, 1);
+
+      // Remove the corresponding row from the table
+      const table = document.querySelector('#requestsTable');
+      if (!table) {
+          console.error("Table not found. Ensure #requestsTable exists in the DOM.");
+      }    
+      table.deleteRow(index + 1);
+
+      // debug
+      alert("Marker deleted successfully.");
+
+      // close the modal (the details) after deletion
+      closeModal();
+    }
+    updateVisibleRows()
   }
-  // ask the user to confirm if they want to delete the marker
-  const deleteConfirmed = confirm("Are you sure you want to delete this marker?");
-  if (deleteConfirmed) {
-    // we need to consider 3 cases
-    // remove the marker from the map
-    map.removeLayer(markers[index]);
-    // remove the marker from the markers array
-    markers.splice(index, 1);
-    // remove the marker data from the locationData array
-    locationData.splice(index, 1);
+}
 
-    // Remove the corresponding row from the table
-    const table = document.querySelector('#requestsTable');
-    if (!table) {
-        console.error("Table not found. Ensure #requestsTable exists in the DOM.");
-    }    
-    table.deleteRow(index + 1);
+//Emergency Request Table:
+const tableBody = document.querySelector('#requestsTable tbody');
+const popupForm = document.querySelector('#popupForm');
+const overlay = document.querySelector('#overlay');
+const detailPopup = document.createElement('div');
 
-    // debug
-    alert("Marker deleted successfully.");
+// Create and style the detail popup dynamically
+detailPopup.id = 'detailPopup';
+document.body.appendChild(detailPopup);
 
-    // close the modal (the details) after deletion
-    closeModal();
-  }
-  updateVisibleRows()
+function showPopup() {
+  popupForm.style.display = 'block';
+  overlay.style.display = 'block';
+}
+
+function hidePopup() {
+  popupForm.style.display = 'none';
+  overlay.style.display = 'none';
+}
+
+function showDetails(request) {
+  detailPopup.innerHTML = `
+        <h3>Request Details</h3>
+        <p><strong>Name:</strong> ${request.Name}</p>
+        <p><strong>Phone Number:</strong> ${request.PhoneNumber}</p>
+        <p><strong>Type:</strong> ${request.Type}</p>
+        <p><strong>Location:</strong> ${request.Location}</p>
+        <p><strong>Picture:</strong> <img src="${request.Picture}" alt="Request Image" style="width: 100px; height: 100px;"></p>
+        <p><strong>Comments:</strong> ${request.Comments}</p>
+        <p><strong>Time:</strong> ${request.Time}</p>
+        <p><strong>Status:</strong> ${request.Status}</p>
+        <button onclick="hideDetails()">Close</button>
+    `;
+  detailPopup.style.display = 'block';
+  overlay.style.display = 'block';
+}
+
+function hideDetails() {
+  detailPopup.style.display = 'none';
+  overlay.style.display = 'none';
 }
 
 
+function renderTable(requests) {
+  // Clear the table first
+  tableBody.innerHTML = '';
+
+  // Add rows for each request
+  locationData.forEach(request => {
+    const row = document.createElement('tr');
+    row.style.cursor = 'pointer'; // Make rows clickable
+
+    for (const key in request) {
+      const cell = document.createElement('td');
+      if (key === 'Picture') {
+        const img = document.createElement('img');
+        img.src = request[key];
+        img.alt = 'Request Image';
+        img.style.width = '50px';
+        img.style.height = '50px';
+        cell.appendChild(img);
+      } else {
+        cell.textContent = request[key];
+      }
+      row.appendChild(cell);
+    }
+
+    // Add click event listener to the row
+    row.addEventListener('click', () => showDetails(request));
+    tableBody.appendChild(row);
+  });
+}
+
+
+// password stuff
+function createPassword() {
+  var newPassword = prompt("No password set. Please create a new password:");
+  newPassword = CryptoJS.MD5(newPassword);
+  newPassword = newPassword.toString();
+  if (newPassword) {
+    // save the newly created password
+
+    //markerData.markerPassword = newPassword;  
+    return newPassword;
+  } else {
+    alert("Password creation canceled.");
+    return null;
+  }
+}
+var hash = CryptoJS.MD5("Message");
+function admin() {
+  if (viewOnly == true) {
+    login();
+  } else {
+    logout();
+  }
+
+  const button = document.getElementById('admin');
+  if (viewOnly) {
+    // TODO: maybe add images
+    button.innerHTML = '<img src="cant_addmarker.png" alt="Log in">';
+  } else {
+    button.innerHTML = '<img src="addmarker.png" alt="Log Out">';
+  }
+}
+function login() {
+  // Ask for password
+  var enteredPassword = CryptoJS.MD5(prompt("Enter password to view the map:"));
+  var strPass = enteredPassword.toString();
+  var strHash = hash.toString();
+  console.log(strPass);
+  // Compare password
+  if (strPass !== strHash) {
+    viewOnly = true;
+    alert("Incorrect password.");
+  } else {
+    viewOnly = false;
+    alert("Welcome back.");
+  }
+}
+
+function logout() {
+  viewOnly = true;
+  alert("Logged out. You cannot add new markers.");
+}
+document.getElementById('admin').addEventListener('click', admin);
+
 document.addEventListener('DOMContentLoaded', function () {
+  
   viewOnly = true;
   changeMode();
 });
@@ -491,14 +630,14 @@ function updateVisibleRows() {
 document.addEventListener('DOMContentLoaded', () => {
   renderLocalMarkers(); // Load markers from storage
   renderLocalTable();   // Populate table rows
-});
 
-document.addEventListener('DOMContentLoaded', () => {
-  // Initialize the map and add listeners here
-  map.whenReady(() => {
+    // Initialize the map and add listeners here
+    map.whenReady(() => {
       console.log("Map is ready.");
       map.on('move', updateVisibleRows);
       map.on('moveend', updateVisibleRows);
       map.on('zoomend', updateVisibleRows);
   });
+
+  console.log("viewOnly Status:", viewOnly);
 });
