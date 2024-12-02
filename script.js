@@ -128,7 +128,7 @@ function onMapClick(e) {
       <td>${reportType}</td>
       <td>${locationName}</td>
       <td>${imageURL}</td>
-      
+      <td>${moreInfo}</td>
       <td>${timeReported}</td>
       <td>${status}</td>
       <td>
@@ -522,7 +522,7 @@ document.getElementById('admin').addEventListener('click', admin);
 
 document.addEventListener('DOMContentLoaded', function () {
   
-  viewOnly = true;
+  viewOnly = false;
   changeMode();
 });
 
