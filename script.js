@@ -326,7 +326,7 @@ function editMarker(index) {
           // Update the status in the corresponding table row
           const tableRows = document.querySelectorAll('#requestsTable tbody tr');
           if (tableRows[index]) {
-              tableRows[index].cells[6].innerText = newStatus;
+              tableRows[index].cells[7].innerText = newStatus;
           }
 
           alert("Marker updated successfully.");
@@ -350,20 +350,21 @@ function deleteMarker(index) {
   // get the marker data
   const markerData = locationData[index];
   // get the password if set for the marker
-  const savedPassword = markerData.markerPassword;
+  // const savedPassword = markerData.markerPassword;
 
-  // if no password exists prompt the user to make one
-  if (!savedPassword) {
-    createPassword();
-  }
-  else {
-    // if a password is set, ask the user to enter it
-    const enteredPassword = CryptoJS.MD5(prompt("Enter password to delete:")).toString();
-    if (enteredPassword !== savedPassword) {
-      alert("Incorrect password. Deletion canceled.");
-      return;
-    }
-  }
+  // // if no password exists prompt the user to make one
+  // if (!savedPassword) {
+  //   createPassword();
+  // }
+  // else {
+  //   // if a password is set, ask the user to enter it
+  //   const enteredPassword = CryptoJS.MD5(prompt("Enter password to delete:")).toString();
+  //   if (enteredPassword !== savedPassword) {
+  //     alert("Incorrect password. Deletion canceled.");
+  //     return;
+  //   }
+  // }
+
   // ask the user to confirm if they want to delete the marker
   const deleteConfirmed = confirm("Are you sure you want to delete this marker?");
   if (deleteConfirmed) {
