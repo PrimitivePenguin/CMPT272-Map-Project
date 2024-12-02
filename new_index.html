@@ -10,6 +10,7 @@
   crossorigin=""/>
   <!--css-->
   <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="cat.jpg" type="image/x-icon">
   <!--MD5 for passcode storage-->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -19,7 +20,6 @@
 <body>
   <div>
     <h1 id="title">Map</h1>
-    <p>Text</p>
   </div>
   <div class="dm_ip_check">
     <input type="checkbox" id="modeChange">
@@ -31,10 +31,8 @@
   <div id="map"></div>
   <div id="list">
     <h1>Emergency Requests List</h1>
-    <button id="addRequest" onclick="showPopup()">+ Add Request</button>
     <div id="overlay"></div>
     <div id="popupForm">
-      <h3>Add New Request</h3>
       <label>
           Name: <input type="text" id="nameInput">
       </label>
@@ -53,8 +51,6 @@
       <label>
           Comments: <input type="text" id="commentsInput">
       </label>
-      <button onclick="addRequest()">Add</button> 
-      <button onclick="hidePopup()">Cancel</button>
   </div>
       <table id="requestsTable">
         <thead>
@@ -75,7 +71,6 @@
     </table>
 
   </div>
-  <script src="requests.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
