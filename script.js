@@ -51,19 +51,19 @@ function onMapClick(e) {
   const formHTML = `
     <div class="popup-content">
       <form id="locationForm">
-        <labe>Name: <input type="text" id="name"></label><br>
-        <label>Location: <input type="text" id="locationName" placeholder="Enter location (e.g., SFU)"></label><br>
+        <labe>Name: <input type="text" id="name" required></label><br>
+        <label>Location: <input type="text" id="locationName" placeholder="Enter location (e.g., SFU)" required></label><br>
         <label>Type: <input type="text" id="reportType" placeholder="Enter type (e.g., shooting, medical)" required></label><br>        
         <label>Status: 
-          <select id="status">
+          <select id="status" required>
             <option value="open" selected>Open</option>
             <option value="resolved">Resolved</option>
           </select>
         </label><br>
-        <label>Phone number: <input type="tel" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="xxx-xxx-xxxx"></label><br>        
+        <label>Phone number: <input type="tel" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="xxx-xxx-xxxx" required></label><br>        
         <label>More Info: <textarea id="moreInfo" placeholder="Enter additional details"></textarea></label><br>
         <label>Optional Image: <input type="file" id="imageUpload" accept="image/*"></label><br>
-        <labe>Create password: <input type="checkbox" id="passCheck"></label><br>
+        // <labe>Create password: <input type="checkbox" id="passCheck"></label><br>
         <button type="submit">Submit</button>
       </form>
     </div>
