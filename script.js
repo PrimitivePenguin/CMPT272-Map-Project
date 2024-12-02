@@ -556,12 +556,12 @@ let currentSort = { column: '', order: 'asc' };
 
 function sortLocationData(sortBy, order = 'asc') {
   const compare = (a, b) => {
-      if (sortBy === 'Time') {
-          const timeA = new Date(a.Time);
-          const timeB = new Date(b.Time);
+      if (sortBy === 'timeReported') {
+          const timeA = new Date(a.timeReported);
+          const timeB = new Date(b.timeReported);
           return order === 'asc' ? timeA - timeB : timeB - timeA;
-      } else if (sortBy === 'PhoneNumber') {
-          return order === 'asc' ? a.PhoneNumber - b.PhoneNumber : b.PhoneNumber - a.PhoneNumber;
+      } else if (sortBy === 'phone') {
+          return order === 'asc' ? a.phone - b.phone : b.phone - a.phone;
       } else {
           const valA = a[sortBy].toString().toLowerCase();
           const valB = b[sortBy].toString().toLowerCase();
