@@ -10,19 +10,24 @@
   crossorigin=""/>
   <!--css-->
   <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="cat.jpg" type="image/x-icon">
   <!--MD5 for passcode storage-->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1-crypto-js.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
   integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
   crossorigin=""></script>
 </head>
 <body>
   <div>
-    <h1 id="title">Map</h1>
-    <p>Text</p>
+    <h1 id="title">Emergency Reporting system</h1>
+    <p>Click on the map to add or view emergency locations. Manage requests below the map.</p>
+  </div>
+  <div class="dm_ip_check">
+    <input type="checkbox" id="modeChange">
+    <label for="modeChange">Dark Mode</label>
   </div>
   <div>
-    <button id="toggleViewOnlyBtn">Toggle View-Only Mode</button>  
+    <button id="admin">Log In</button>
   </div>
   <div id="map"></div>
   <div id="list">
@@ -46,6 +51,10 @@
     </table>
 
   </div>
+
+  <footer>
+    © 2024 Emergency Reporting System. Designed by Group 26 
+  </footer>
   <script src="script.js"></script>
 </body>
 </html>

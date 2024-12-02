@@ -1,14 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Roboto', Arial, sans-serif;
     text-align: center;
     margin: 0;
     padding: 0;
+    color: #333;
+    background-color: #f9f9f9;
+    padding-bottom: 50px;
+}
+body {
+    &.dark {
+        font-family: 'Roboto', Arial, sans-serif;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+        background-color: #333;
+        color: #f9f9f9;
+        padding-bottom: 50px;
+    }
 }
 
+.dm_ip_check {
+    width: 200px;
+    position: relative;
+    display: inline-block;
+    padding: 15px 100px;
+}
+.dm_ip_check input {
+	display: none;
+    align-items: center;
+}
+.dm_ip_check label {
+	position: relative;
+	display: block;
+	padding: 15px 0;
+	padding-right: 35px;
+	cursor: pointer;
+  font-size: 1rem;
+}
+.dm_ip_check input[type='checkbox'] {
+	position: absolute;
+	visibility: hidden !important;
+}
+.dm_ip_check input[type='checkbox'] + label:before,
+.dm_ip_check input[type='checkbox'] + label:after {
+	position: absolute;
+	top: 50%;
+	-webkit-box-sizing: border-box;
+	        box-sizing: border-box;
+	margin-top: -7.5px;
+	content: '';
+}
+.dm_ip_check input[type='checkbox'] + label:before {
+	
+    right: 0;
+	width: 60px;
+	height: 30px;
+	border: 1px solid #e4e3e1;
+	border-radius: 30px;
+	background: #ffffff;
+}
+.dm_ip_check input[type='checkbox']:checked + label:before {
+    background-color: #bbb;
+}
+/* Circle within the mode*/
+.dm_ip_check input[type='checkbox'] + label:after {
+	right: 29px;
+	width: 30px;
+	height: 30px;
+	-webkit-transition: all 200ms ease-out;
+	        transition: all 200ms ease-out;
+	border-radius: 50%;
+	background: #bdbdbd;
+}
+.dm_ip_check input[type='checkbox']:checked + label:after {
+	right: 0;
+	background: #545454;
+    background-size: contain;
+  background-repeat: no-repeat;
+  font-family:"Font Awesome 5 Free";
+  padding: 6px 0 0 8px;
+}
 /* Title and description style */
 h1 {
     margin-top: 30px;
-    font-size: 2em;
+    font-size: 2.5em;
+    color: #d0490f;
+    text-transform: uppercase;
 }
 
 #description {
@@ -23,6 +102,9 @@ h1 {
     margin: 30px auto;
     min-width: 500px;
     min-height: 600px;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Table style */
@@ -98,18 +180,84 @@ table {
     margin-top: 20px;
     margin-right: auto;
     margin-left: auto;
+    margin-bottom: 50px;
     text-align: center;
+    background-color: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-th, td {
+th {
     padding: 8px;
     text-align: left;
     border: 1px solid #ddd;
+    background-color: #d6cbc7;
+    cursor: pointer;
+}
+
+th:hover::after {
+    content: attr(title);
+}
+
+body.dark th {
+    padding: 8px;
+    text-align: left;
+    border: 1px solid #242424;
+    background-color: #1c1c1c;
+    cursor: pointer;
+}
+
+th:hover {
+    background-color: #f1f1f1;
+}
+
+td {
+    padding: 8px;
+    text-align: left;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+}
+
+body.dark td {
+    padding: 8px;
+    text-align: left;
+    border: 1px solid #242424;
+    background-color: #333;
 }
 
 tr:hover {
     background-color: #f1f1f1;
     cursor: pointer;
+}
+
+body.dark tr:hover {
+    background-color: #555;
+}
+
+p {
+    font-size: 0.85rem;
+}
+.tooltip {
+    visibility: hidden;
+    position: absolute;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    z-index: 10;
+    white-space: nowrap;
+    bottom: 100%; /* Adjust position to appear above the header */
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 5px;
+}
+.tooltip th:hover{
+    visibility: visible;
+    transform: translateY(-10px);
+    transition: visibility 0.3s ease, transform 0.3s ease;
 }
 
 .highlight {
@@ -192,5 +340,3 @@ img {
 #addRequest:hover {
     background-color: #218838;
 }
-
-

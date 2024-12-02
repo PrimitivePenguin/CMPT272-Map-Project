@@ -1,4 +1,4 @@
-// Group: Alexander, Alex, Camille, Emily, Discord
+// Group: Alexander, Alex, Camille, Emily, Josevan
 // Date: December 3rd, 2024
 
 /* 
@@ -15,11 +15,14 @@
 */
 
 
+
+
 /* Setup */
 // initialize the map centered at (Vancouver, BC) with default zoom level 12
-var map = L.map('map', { 
-  trackResize: true, 
-  minZoom: 10        
+//window.localStorage.clear();
+var map = L.map('map', {
+  trackResize: true,
+  minZoom: 10
 }).setView([49.2827, -123.1207], 12);
 
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -30,38 +33,19 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 
 // Array to hold locations
-let locationData = []; 
+// If there are requests in local storage, retrieve them first
+let storedRequests = localStorage.getItem("requestsArray");
+let locationData = storedRequests ? JSON.parse(storedRequests) : [];
 // Array to keep references to map markers
-let markers = [];      
+// locally stored markers are initialized through DOM load event   
+let markers = [];
 // Flag to track if the map is in view-only mode
-let viewOnly = false; 
-
 
 /* Functionality */
-// toggles adding new markers 
-function toggleViewOnly() {
-  viewOnly = !viewOnly; 
-  alert(viewOnly ? "Map is now in view-only mode. You cannot add new markers." : "Map is no longer in view-only mode.");
-  const button = document.getElementById('toggleViewOnlyBtn');
-  if (viewOnly) {
-    // TODO: maybe add images
-    button.innerHTML = '<img src="cant_addmarker.png" alt="View Only">'; 
-  } else {
-    button.innerHTML = '<img src="addmarker.png" alt="Add Mode">'; 
-  }
-}
-// add event listener to the toggle button
-document.getElementById('toggleViewOnlyBtn').addEventListener('click', toggleViewOnly);
-
 // handles map click events to add a new marker with form input
 function onMapClick(e) {
-  console.log("View-Only Mode: " + viewOnly);
-  // flag to track if the map is in view-only mode
-  if (viewOnly) { 
-    return; 
-  }
   // get current timestamp
-  const timeReported = new Date().toLocaleString('en-US', { hour12: true }); 
+  const timeReported = new Date().toLocaleString('en-US', { hour12: true });
   // HTML form for capturing marker details
   const formHTML = `
     <div class="popup-content">
@@ -76,8 +60,10 @@ function onMapClick(e) {
             <option value="resolved">Resolved</option>
           </select>
         </label><br>
+        <label>Phone number: <input type="tel" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="xxx-xxx-xxxx"></label><br>        
         <label>More Info: <textarea id="moreInfo" placeholder="Enter additional details"></textarea></label><br>
         <label>Optional Image: <input type="file" id="imageUpload" accept="image/*"></label><br>
+        <labe>Create password: <input type="checkbox" id="passCheck"></label><br>
         <button type="submit">Submit</button>
       </form>
     </div>
@@ -88,28 +74,33 @@ function onMapClick(e) {
     shadowSize: [50, 50]
   }).setLatLng(e.latlng).setContent(formHTML).openOn(map);
 
-  console.log(e.latlng);
-  
   // handle form submission to add marker data
-  document.getElementById('locationForm').onsubmit = function(event) {
+  document.getElementById('locationForm').onsubmit = function (event) {
     event.preventDefault();
     // retrieve form data
     const reportedBy = document.getElementById('reportedBy').value;
     const phoneNumber = document.getElementById('phoneNumber').value;
     const locationName = document.getElementById('locationName').value;
     const reportType = document.getElementById('reportType').value;
-    const status = document.getElementById('status').value;
+    const status = 'Open';
     const moreInfo = document.getElementById('moreInfo').value;
     const imageFile = document.getElementById('imageUpload').files[0];
-    const imageURL = imageFile ? URL.createObjectURL(imageFile) : null; 
+    const imageURL = imageFile ? URL.createObjectURL(imageFile) : null;
 
     // add location data to the array locationData
-    const locationEntry = {reportedBy, phoneNumber, locationName, reportType, status, timeReported, moreInfo, imageURL, markerPassword: null };
-    locationData.push(locationEntry);
+
+    if (document.getElementById('passCheck').checked) {
+      var pass = createPassword();
+      locationData.push({ reportedBy, phone, locationName, reportType, status, location, imageURL, moreInfo, timeReported, markerPassword: pass });
+    } else {
+      locationData.push({ reportedBy, phone, locationName, reportType, status, location, imageURL, moreInfo, timeReported, markerPassword: null });
+    }
+    console.log(locationData);
+    localStorage.setItem("requestsArray", JSON.stringify(locationData));
 
     // create a marker on the map
-    const markerIndex = locationData.length - 1; // index of the newly added location
-    // add marker to the array markers
+    const markerIndex = locationData.length - 1;
+    // add marker to the markers array
     const marker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(map);
     markers.push(marker);
 
@@ -119,6 +110,14 @@ function onMapClick(e) {
       offset: [-15, -20],
       direction: 'top',
     });
+
+    // add marker to local storage
+    // only store essential info, bc marker objects are complicated
+    const markerData = markers.map(marker => ({
+      lat: marker.getLatLng().lat,
+      lng: marker.getLatLng().lng,
+    }));
+    localStorage.setItem("markerArray", JSON.stringify(markerData));
 
     // add a new row to the table with location details
     const tableRow = document.createElement('tr');
@@ -131,16 +130,14 @@ function onMapClick(e) {
       <td>${moreInfo}</td>
       <td>${timeReported}</td>
       <td>${status}</td>
-      <td>
-        <span onclick="viewDetails(${markerIndex})" style="cursor:pointer;color:blue;text-decoration:underline;">View Info</span> (${hasMoreInfo})
-      </td>
     `;
 
     //Add click event listener to the row 
     tableRow.addEventListener('click', () => viewDetails(markerIndex));
 
     // find first instance of table in html file
-    document.querySelector('table').appendChild(tableRow);
+    document.querySelector('#requestsTable tbody').appendChild(tableRow);
+    console.log("Row added:", tableRow);
 
     // hover over table row case
     tableRow.addEventListener('mouseover', () => {
@@ -167,9 +164,79 @@ function onMapClick(e) {
     });
 
     // close the popup after adding the marker
-    popup.remove(); 
+    popup.remove();
   };
+  updateVisibleRows();
 }
+
+// Function to render data that was stored in local
+function renderLocalMarkers() {
+  const storedMarkers = localStorage.getItem("markerArray");
+  if (storedMarkers) {
+    const markerData = JSON.parse(storedMarkers);
+    markerData.forEach(({ lat, lng }, index) => {
+      const marker = L.marker([lat, lng]).addTo(map);
+      markers.push(marker);
+
+      const location = locationData[index];
+      if (location) {
+        marker.bindTooltip(`<strong>${location.locationName}</strong><br>${location.reportType}`, {
+          offset: [-15, -20],
+          direction: 'top',
+        });
+      }
+
+      // Add click event to marker to show details
+      marker.on('click', () => {
+        viewDetails(index);
+      });
+    });
+  }
+}
+
+function renderLocalTable() {
+  if (locationData.length > 0) {
+    locationData.forEach((entry, index) => {
+      const tableRow = document.createElement('tr');
+      const hasMoreInfo = entry.moreInfo ? '✅' : '❎';
+      tableRow.innerHTML = `
+        <td>${entry.name}</td>
+        <td>${entry.phone}</td>
+        <td>${entry.reportType}</td>
+        <td>${entry.locationName}</td>
+        <td>${entry.imageURL}</td>
+        <td>
+          <span onclick="viewDetails(${index})" style="cursor:pointer;color:blue;text-decoration:underline;">View Info</span> (${hasMoreInfo})
+        </td>
+        <td>${entry.timeReported}</td>
+        <td>${entry.status}</td>
+      `;
+      document.querySelector('#requestsTable tbody').appendChild(tableRow);
+
+      const marker = markers[index]; // Ensure synchronization
+      if (marker) {
+        tableRow.addEventListener('mouseover', () => {
+          marker.openTooltip();
+          tableRow.style.backgroundColor = '#FFFF00';
+        });
+        tableRow.addEventListener('mouseout', () => {
+          marker.closeTooltip();
+          tableRow.style.backgroundColor = '';
+        });
+
+        marker.on('mouseover', () => {
+          marker.openTooltip();
+          tableRow.style.backgroundColor = '#FFFF00';
+        });
+        marker.on('mouseout', () => {
+          marker.closeTooltip();
+          tableRow.style.backgroundColor = '';
+        });
+      }
+    });
+  }
+}
+
 
 // attach the map click handler
 map.on('click', onMapClick);
@@ -177,7 +244,7 @@ map.on('click', onMapClick);
 // Function to display details of a selected marker in a modal
 function viewDetails(index) {
   // get the location data for the selected marker
-  const locationEntry = locationData[index];  
+  const locationEntry = locationData[index];
   // create the HTML content for the modal (DETAILS)
   const modalHTML = `
     <div id="detailsModal" class="modal">
@@ -209,26 +276,26 @@ function viewDetails(index) {
 // function to close the details modal
 function closeModal() {
   // get the modal element
-  const modal = document.getElementById('detailsModal');  
-  if (modal) { 
+  const modal = document.getElementById('detailsModal');
+  if (modal) {
     // remove the modal from the page
-    modal.remove();  
+    modal.remove();
   }
 }
 
 // Function to edit the details of a marker
 function editMarker(index) {
   // get the marker data
-  const markerData = locationData[index];  
+  const markerData = locationData[index];
   // get the password if set for the marker
-  let savedPassword = markerData.markerPassword;  
+  let savedPassword = markerData.markerPassword;
 
   // if no password is set, prompt the user to create one
   if (!savedPassword) {
     const newPassword = prompt("No password set. Please create a new password:");
     if (newPassword) {
       // save the new password
-      markerData.markerPassword = newPassword; 
+      markerData.markerPassword = newPassword;
       alert("Password set successfully. You can now edit this marker.");
     } else {
       alert("Password creation canceled.");
@@ -236,7 +303,7 @@ function editMarker(index) {
     }
   } else {
     // if a password exists just ask the user to enter it
-    const enteredPassword = prompt("Enter password to edit: ");
+    const enteredPassword = CryptoJS.MD5(prompt("Enter password to edit: ")).tosString();
     if (enteredPassword !== savedPassword) {
       alert("Incorrect password. Edit canceled.");
       return;
@@ -249,7 +316,7 @@ function editMarker(index) {
     const newStatus = prompt("Change the status (open/resolved):", markerData.status);
     if (newStatus) {
       // update the status of the marker
-      markerData.status = newStatus;  
+      markerData.status = newStatus;
       // markers[index].bindPopup(
       //   `<b>Location:</b> ${markerData.locationName}<br>
       //   <b>Type:</b> ${markerData.reportType}<br>
@@ -261,68 +328,177 @@ function editMarker(index) {
       // );
 
       // update the status in the table row
-      const tableRow = document.querySelectorAll('table tr')[index + 1]; 
+      const tableRow = document.querySelectorAll('table tr')[index + 1];
       tableRow.cells[3].innerText = newStatus;
 
       alert("Marker updated successfully.");
-      
+
       // close the modal after editing
-      closeModal(); 
+      closeModal();
     }
   } else {
     alert("Edit canceled.");
   }
+  updateVisibleRows()
 }
 
 // function to delete a marker (similar password checker as editMarker)
 function deleteMarker(index) {
   // get the marker data
-  const markerData = locationData[index];  
+  const markerData = locationData[index];
   // get the password if set for the marker
-  const savedPassword = markerData.markerPassword;  
+  const savedPassword = markerData.markerPassword;
 
   // if no password exists prompt the user to make one
   if (!savedPassword) {
-    const newPassword = prompt("No password set. Please create a new password:");
-    if (newPassword) {
-      // save the newly created password
-      markerData.markerPassword = newPassword;  
-      alert("Password set successfully. You can now delete this marker.");
-    } else {
-      alert("Password creation canceled.");
-      return;
-    }
-  } 
+    createPassword();
+  }
   else {
     // if a password is set, ask the user to enter it
-    const enteredPassword = prompt("Enter password to delete:");
+    const enteredPassword = CryptoJS.MD5(prompt("Enter password to delete:")).toString();
     if (enteredPassword !== savedPassword) {
       alert("Incorrect password. Deletion canceled.");
       return;
     }
   }
-
   // ask the user to confirm if they want to delete the marker
   const deleteConfirmed = confirm("Are you sure you want to delete this marker?");
   if (deleteConfirmed) {
     // we need to consider 3 cases
     // remove the marker from the map
-    map.removeLayer(markers[index]);  
+    map.removeLayer(markers[index]);
     // remove the marker from the markers array
-    markers.splice(index, 1);  
+    markers.splice(index, 1);
     // remove the marker data from the locationData array
-    locationData.splice(index, 1);  
+    locationData.splice(index, 1);
 
     // Remove the corresponding row from the table
-    const table = document.querySelector('table');
-    table.deleteRow(index + 1); 
+    const table = document.querySelector('#requestsTable');
+    if (!table) {
+        console.error("Table not found. Ensure #requestsTable exists in the DOM.");
+    }    
+    table.deleteRow(index + 1);
 
     // debug
     alert("Marker deleted successfully.");
 
     // close the modal (the details) after deletion
-    closeModal();  
+    closeModal();
   }
+  updateVisibleRows()
 }
 
 
+document.addEventListener('DOMContentLoaded', function () {
+  viewOnly = true;
+  changeMode();
+});
+
+// dark mode
+const btn = document.querySelector('#modeChange');
+function changeMode() {
+  if (btn.checked == true) {
+    // Dark mode
+    document.body.classList.remove('light');
+    document.body.classList.add('dark');
+    console.log("Dark mode");
+  } else {
+    // Light mode
+    document.body.classList.remove('dark');
+    document.body.classList.add('light');
+    console.log("Light mode");
+  }
+}
+btn.addEventListener('change', function () {
+  changeMode();
+});
+
+let currentSort = { column: '', order: 'asc' };
+
+function sortLocationData(sortBy, order = 'asc') {
+  const compare = (a, b) => {
+      if (sortBy === 'Time') {
+          const timeA = new Date(a.Time);
+          const timeB = new Date(b.Time);
+          return order === 'asc' ? timeA - timeB : timeB - timeA;
+      } else if (sortBy === 'PhoneNumber') {
+          return order === 'asc' ? a.PhoneNumber - b.PhoneNumber : b.PhoneNumber - a.PhoneNumber;
+      } else {
+          const valA = a[sortBy].toString().toLowerCase();
+          const valB = b[sortBy].toString().toLowerCase();
+          if (valA < valB) return order === 'asc' ? -1 : 1;
+          if (valA > valB) return order === 'asc' ? 1 : -1;
+          return 0;
+      }
+  };
+
+  return locationData.sort(compare);
+}
+
+document.querySelectorAll('#requestsTable th').forEach(th => {
+  th.addEventListener('click', () => {
+      const column = th.getAttribute('data-sort');
+      let order = 'asc';
+
+      // Toggle sorting order
+      if (currentSort.column === column && currentSort.order === 'asc') {
+          order = 'desc';
+      }
+
+      // Update the current sorting state
+      currentSort = { column, order };
+
+      // Sort the requests based on the column and order
+      const sortedRequests = sortLocationData(column, order);
+
+      // Render the sorted table
+      renderTable(sortedRequests);
+  });
+});
+
+
+function updateVisibleRows() {
+  console.log("updateVisibleRows called due to map movement or zoom.");
+
+  const bounds = map.getBounds(); // Get current map bounds
+  console.log("Current map bounds:", bounds.toBBoxString());
+
+  const tableRows = document.querySelectorAll('#requestsTable tbody tr');
+  console.log("Number of table rows:", tableRows.length);
+
+  // hide all table rows by default (AT THE START of each iteration)
+  tableRows.forEach(row => {
+      row.style.display = 'none';
+  });
+
+  // iterate through markers and show corresponding rows if marker is visible
+  markers.forEach((marker, index) => {
+      const markerLatLng = marker.getLatLng();
+      const isVisible = bounds.contains(markerLatLng); // check if marker is within bounds
+      console.log(`Marker ${index} (${markerLatLng}): visible? ${isVisible}`);
+
+      const row = tableRows[index];
+      if (row) {
+          row.style.display = isVisible ? '' : 'none'; // Show or hide row
+      } else {
+          console.warn(`No corresponding row found for marker ${index}.`);
+      }
+  });
+}
+
+
+// Trigger initial update after map and markers are rendered
+document.addEventListener('DOMContentLoaded', () => {
+  renderLocalMarkers(); // Load markers from storage
+  renderLocalTable();   // Populate table rows
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Initialize the map and add listeners here
+  map.whenReady(() => {
+      console.log("Map is ready.");
+      map.on('move', updateVisibleRows);
+      map.on('moveend', updateVisibleRows);
+      map.on('zoomend', updateVisibleRows);
+  });
+});
