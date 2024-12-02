@@ -128,11 +128,12 @@ function onMapClick(e) {
       <td>${reportType}</td>
       <td>${locationName}</td>
       <td>${imageURL}</td>
+      
+      <td>${timeReported}</td>
+      <td>${status}</td>
       <td>
       <span onclick="viewDetails(${markerIndex})" style="cursor:pointer;color:blue;text-decoration:underline;">View Info</span> (${hasMoreInfo})
       </td> 
-      <td>${timeReported}</td>
-      <td>${status}</td>
     `;
     // find first instance of table in html file
     document.querySelector('#requestsTable tbody').appendChild(tableRow);
@@ -285,57 +286,49 @@ function closeModal() {
   }
 }
 
-// Function to edit the details of a marker
 function editMarker(index) {
-  if (viewOnly) {
-    alert("You do not have permission to edit markers.");
-    return;
-  }
-  // get the marker data
+  // Get the marker data
   const markerData = locationData[index];
-  // get the password if set for the marker
-  let savedPassword = markerData.markerPassword;
 
-  
-  // if no password is set, prompt the user to create one
-  if (savedPassword) {
-    // const newPassword = prompt("No password set. Please create a new password:");
-    // if (newPassword) {
-    //   // save the new password
-    //   markerData.markerPassword = newPassword;
-    //   alert("Password set successfully. You can now edit this marker.");
-    // } else {
-    //   alert("Password creation canceled.");
-    //   return;
-    // }
-    // if a password exists just ask the user to enter it
-    const enteredPassword = CryptoJS.MD5(prompt("Enter password to edit: ")).tosString();
-    if (enteredPassword !== savedPassword) {
-      alert("Incorrect password. Edit canceled.");
-      return;
-    }
-  }
+  // // Get the password if set for the marker
+  // let savedPassword = markerData.markerPassword;
 
-  // ask the user if they want to continue with editing
+  // // If no password is set, prompt the user to create one
+  // if (!savedPassword) {
+  //     const newPassword = prompt("No password set. Please create a new password:");
+  //     if (newPassword) {
+  //         // Save the new password
+  //         markerData.markerPassword = newPassword;
+  //         alert("Password set successfully. You can now edit this marker.");
+  //     } else {
+  //         alert("Password creation canceled.");
+  //         return;
+  //     }
+  // } else {
+  //     // If a password exists, prompt the user to enter it
+  //     const enteredPassword = CryptoJS.MD5(prompt("Enter password to edit:")).toString();
+  //     if (enteredPassword !== savedPassword) {
+  //         alert("Incorrect password. Edit canceled.");
+  //         return;
+  //     }
+  // }
+
+  // Ask the user if they want to continue with editing
   const shouldEdit = confirm("Do you want to edit the marker?");
   if (shouldEdit) {
-    const newStatus = prompt("Change the status (open/resolved):", markerData.status);
-    if (newStatus) {
-      // update the status of the marker
-      markerData.status = newStatus;
+      const newStatus = prompt("Change the status (open/resolved):", markerData.status);
+      if (newStatus) {
+          // Update the status of the marker
+          markerData.status = newStatus;
+          localStorage.setItem("requestsArray", JSON.stringify(locationData));
 
-      // new popup
-      
+          // Update the status in the corresponding table row
+          const tableRows = document.querySelectorAll('#requestsTable tbody tr');
+          if (tableRows[index]) {
+              tableRows[index].cells[7].innerText = newStatus;
+          }
 
-      markers[index].bindPopup(
-        `<b>Location:</b> ${markerData.locationName}<br>
-        <b>Type:</b> ${markerData.reportType}<br>
-        <b>Status:</b> ${newStatus}<br>
-        <b>Reported:</b> ${markerData.timeReported}<br>
-        <button onclick="viewDetails(${index})">More Info</button>
-        <button onclick="editMarker(${index})">Edit</button>
-        <button onclick="deleteMarker(${index})">Delete</button>`
-      );
+          alert("Marker updated successfully.");
 
       // update the status in the table row
       const tableRow = document.querySelectorAll('table tr')[index + 1];
@@ -347,58 +340,56 @@ function editMarker(index) {
       closeModal();
     }
   } else {
-    alert("Edit canceled.");
+      alert("Edit canceled.");
   }
-  updateVisibleRows()
 }
 
 // function to delete a marker (similar password checker as editMarker)
 function deleteMarker(index) {
-  if (viewOnly) {
-    alert("You do not have permission to delete markers.");
-    return;
-  } else {
-    // get the marker data
-    const markerData = locationData[index];
-    // get the password if set for the marker
-    const savedPassword = markerData.markerPassword;
+  // get the marker data
+  const markerData = locationData[index];
+  // get the password if set for the marker
+  const savedPassword = markerData.markerPassword;
 
-    // if no password exists prompt the user to make one
-    if (savedPassword) {
-      // if a password is set, ask the user to enter it
-      const enteredPassword = CryptoJS.MD5(prompt("Enter password to delete:")).toString();
-      if (enteredPassword !== savedPassword) {
-        alert("Incorrect password. Deletion canceled.");
-        return;
-      }
-    }
-    // ask the user to confirm if they want to delete the marker
-    const deleteConfirmed = confirm("Are you sure you want to delete this marker?");
-    if (deleteConfirmed) {
-      // we need to consider 3 cases
-      // remove the marker from the map
-      map.removeLayer(markers[index]);
-      // remove the marker from the markers array
-      markers.splice(index, 1);
-      // remove the marker data from the locationData array
-      locationData.splice(index, 1);
-
-      // Remove the corresponding row from the table
-      const table = document.querySelector('#requestsTable');
-      if (!table) {
-          console.error("Table not found. Ensure #requestsTable exists in the DOM.");
-      }    
-      table.deleteRow(index + 1);
-
-      // debug
-      alert("Marker deleted successfully.");
-
-      // close the modal (the details) after deletion
-      closeModal();
-    }
-    updateVisibleRows()
+  // if no password exists prompt the user to make one
+  if (!savedPassword) {
+    createPassword();
   }
+  else {
+    // if a password is set, ask the user to enter it
+    const enteredPassword = CryptoJS.MD5(prompt("Enter password to delete:")).toString();
+    if (enteredPassword !== savedPassword) {
+      alert("Incorrect password. Deletion canceled.");
+      return;
+    }
+  }
+  // ask the user to confirm if they want to delete the marker
+  const deleteConfirmed = confirm("Are you sure you want to delete this marker?");
+  if (deleteConfirmed) {
+    // we need to consider 3 cases
+    // remove the marker from the map
+    map.removeLayer(markers[index]);
+    // remove the marker from the markers array
+    markers.splice(index, 1);
+    // remove the marker data from the locationData array
+    locationData.splice(index, 1);
+
+    // Remove the corresponding row from the table
+    const table = document.querySelector('#requestsTable');
+    if (!table) {
+        console.error("Table not found. Ensure #requestsTable exists in the DOM.");
+    }    
+    table.deleteRow(index + 1);
+
+    // debug
+    alert("Marker deleted successfully.");
+
+    // close the modal (the details) after deletion
+    closeModal();
+  }
+  updateVisibleRows()
 }
+
 
 //Emergency Request Table:
 const tableBody = document.querySelector('#requestsTable tbody');
@@ -556,12 +547,12 @@ let currentSort = { column: '', order: 'asc' };
 
 function sortLocationData(sortBy, order = 'asc') {
   const compare = (a, b) => {
-      if (sortBy === 'Time') {
-          const timeA = new Date(a.Time);
-          const timeB = new Date(b.Time);
+      if (sortBy === 'timeReported') {
+          const timeA = new Date(a.timeReported);
+          const timeB = new Date(b.timeReported);
           return order === 'asc' ? timeA - timeB : timeB - timeA;
-      } else if (sortBy === 'PhoneNumber') {
-          return order === 'asc' ? a.PhoneNumber - b.PhoneNumber : b.PhoneNumber - a.PhoneNumber;
+      } else if (sortBy === 'phone') {
+          return order === 'asc' ? a.phone - b.phone : b.phone - a.phone;
       } else {
           const valA = a[sortBy].toString().toLowerCase();
           const valB = b[sortBy].toString().toLowerCase();
@@ -576,22 +567,22 @@ function sortLocationData(sortBy, order = 'asc') {
 
 document.querySelectorAll('#requestsTable th').forEach(th => {
   th.addEventListener('click', () => {
-      const column = th.getAttribute('data-sort');
-      let order = 'asc';
+    const column = th.getAttribute('data-sort');
+    let order = 'asc';
 
-      // Toggle sorting order
-      if (currentSort.column === column && currentSort.order === 'asc') {
-          order = 'desc';
-      }
+    // Toggle sorting order
+    if (currentSort.column === column && currentSort.order === 'asc') {
+      order = 'desc';
+    }
 
-      // Update the current sorting state
-      currentSort = { column, order };
+    // Update the current sorting state
+    currentSort = { column, order };
 
-      // Sort the requests based on the column and order
-      const sortedRequests = sortLocationData(column, order);
+    // Sort the requests based on the column and order
+    const sortedRequests = sortLocationData(column, order);
 
-      // Render the sorted table
-      renderTable(sortedRequests);
+    // Render the sorted table
+    renderTable(sortedRequests);
   });
 });
 
@@ -607,21 +598,21 @@ function updateVisibleRows() {
 
   // hide all table rows by default (AT THE START of each iteration)
   tableRows.forEach(row => {
-      row.style.display = 'none';
+    row.style.display = 'none';
   });
 
   // iterate through markers and show corresponding rows if marker is visible
   markers.forEach((marker, index) => {
-      const markerLatLng = marker.getLatLng();
-      const isVisible = bounds.contains(markerLatLng); // check if marker is within bounds
-      console.log(`Marker ${index} (${markerLatLng}): visible? ${isVisible}`);
+    const markerLatLng = marker.getLatLng();
+    const isVisible = bounds.contains(markerLatLng); // check if marker is within bounds
+    console.log(`Marker ${index} (${markerLatLng}): visible? ${isVisible}`);
 
-      const row = tableRows[index];
-      if (row) {
-          row.style.display = isVisible ? '' : 'none'; // Show or hide row
-      } else {
-          console.warn(`No corresponding row found for marker ${index}.`);
-      }
+    const row = tableRows[index];
+    if (row) {
+      row.style.display = isVisible ? '' : 'none'; // Show or hide row
+    } else {
+      console.warn(`No corresponding row found for marker ${index}.`);
+    }
   });
 }
 
