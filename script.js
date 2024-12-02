@@ -91,9 +91,9 @@ function onMapClick(e) {
 
     if (document.getElementById('passCheck').checked) {
       var pass = createPassword();
-      locationData.push({ reportedBy, phone, locationName, reportType, status, location, imageURL, moreInfo, timeReported, markerPassword: pass });
+      locationData.push({ reportedBy, phoneNumber, locationName, reportType, status, location, imageURL, moreInfo, timeReported, markerPassword: pass });
     } else {
-      locationData.push({ reportedBy, phone, locationName, reportType, status, location, imageURL, moreInfo, timeReported, markerPassword: null });
+      locationData.push({ reportedBy, phoneNumber, locationName, reportType, status, location, imageURL, moreInfo, timeReported, markerPassword: null });
     }
     console.log(locationData);
     localStorage.setItem("requestsArray", JSON.stringify(locationData));
@@ -199,17 +199,19 @@ function renderLocalTable() {
     locationData.forEach((entry, index) => {
       const tableRow = document.createElement('tr');
       const hasMoreInfo = entry.moreInfo ? '✅' : '❎';
+
       tableRow.innerHTML = `
-        <td>${entry.name}</td>
-        <td>${entry.phone}</td>
+        <td>${entry.reportedBy}</td>
+        <td>${entry.phoneNumber}</td>
         <td>${entry.reportType}</td>
         <td>${entry.locationName}</td>
-        <td>${entry.imageURL}</td>
+        <td>${entry.moreInfo}</td>
+        
+        <td>${entry.timeReported}</td>
+        <td>${entry.status}</td>
         <td>
           <span onclick="viewDetails(${index})" style="cursor:pointer;color:blue;text-decoration:underline;">View Info</span> (${hasMoreInfo})
         </td>
-        <td>${entry.timeReported}</td>
-        <td>${entry.status}</td>
       `;
       document.querySelector('#requestsTable tbody').appendChild(tableRow);
 
