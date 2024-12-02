@@ -291,55 +291,59 @@ function editMarker(index) {
   // Get the marker data
   const markerData = locationData[index];
 
-  // // Get the password if set for the marker
-  // let savedPassword = markerData.markerPassword;
-
-  // // If no password is set, prompt the user to create one
-  // if (!savedPassword) {
-  //     const newPassword = prompt("No password set. Please create a new password:");
-  //     if (newPassword) {
-  //         // Save the new password
-  //         markerData.markerPassword = newPassword;
-  //         alert("Password set successfully. You can now edit this marker.");
-  //     } else {
-  //         alert("Password creation canceled.");
-  //         return;
-  //     }
-  // } else {
-  //     // If a password exists, prompt the user to enter it
-  //     const enteredPassword = CryptoJS.MD5(prompt("Enter password to edit:")).toString();
-  //     if (enteredPassword !== savedPassword) {
-  //         alert("Incorrect password. Edit canceled.");
-  //         return;
-  //     }
-  // }
-
   // Ask the user if they want to continue with editing
   const shouldEdit = confirm("Do you want to edit the marker?");
   if (shouldEdit) {
-      const newStatus = prompt("Change the status (open/resolved):", markerData.status);
-      if (newStatus) {
-          // Update the status of the marker
-          markerData.status = newStatus;
-          localStorage.setItem("requestsArray", JSON.stringify(locationData));
+    //   const newStatus = prompt("Change the status (open/resolved):", markerData.status);
+    //   if (newStatus) {
+    //       // Update the status of the marker
+    //       markerData.status = newStatus;
+    //       localStorage.setItem("requestsArray", JSON.stringify(locationData));
 
-          // Update the status in the corresponding table row
-          const tableRows = document.querySelectorAll('#requestsTable tbody tr');
-          if (tableRows[index]) {
-              tableRows[index].cells[7].innerText = newStatus;
+    //       // Update the status in the corresponding table row
+    //       const tableRows = document.querySelectorAll('#requestsTable tbody tr');
+    //       if (tableRows[index]) {
+    //           tableRows[index].cells[7].innerText = newStatus;
+    //       }
+
+    //       alert("Marker updated successfully.");
+
+    //   // close the modal after editing
+    //   closeModal();
+    // }
+    let newStatus;
+
+      // Loop to validate input
+      do {
+          newStatus = prompt("Change the status (open/resolved):", markerData.status)?.trim().toLowerCase();
+          if (newStatus !== "open" && newStatus !== "resolved") {
+              alert("Invalid input. Please type 'open' or 'resolved'.");
           }
+      } while (newStatus !== "open" && newStatus !== "resolved");
 
-          alert("Marker updated successfully.");
+      // Capitalize the first letter of the input
+      newStatus = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
 
-      // // update the status in the table row
-      // const tableRow = document.querySelectorAll('table tr')[index + 1];
-      // tableRow.cells[6].innerText = newStatus;
-
-      // alert("Marker updated successfully.");
-
-      // close the modal after editing
-      closeModal();
+      // Check if the status is the same as the current status
+      if (newStatus === markerData.status) {
+        alert(`The status is already ${newStatus}.`);
+        return; // Exit the function without making changes
     }
+
+      // Update the status of the marker
+      markerData.status = newStatus;
+      localStorage.setItem("requestsArray", JSON.stringify(locationData));
+
+      // Update the status in the corresponding table row
+      const tableRows = document.querySelectorAll('#requestsTable tbody tr');
+      if (tableRows[index]) {
+          tableRows[index].cells[7].innerText = newStatus;
+      }
+
+      alert("Marker updated successfully.");
+
+      // Close the modal after editing
+      closeModal();
   } else {
       alert("Edit canceled.");
   }
