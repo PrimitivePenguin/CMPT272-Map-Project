@@ -380,6 +380,15 @@ function deleteMarker(index) {
     // remove the marker data from the locationData array
     locationData.splice(index, 1);
 
+    // store the lat and long of each marker into an array
+    const markerData = markers.map(marker => ({
+      lat: marker.getLatLng().lat,
+      lng: marker.getLatLng().lng,
+    }));
+    // put the updated marker array and requests array into local storage
+    localStorage.setItem("markerArray", JSON.stringify(markerData));
+    localStorage.setItem("requestsArray", JSON.stringify(locationData));
+
     // Remove the corresponding row from the table
     const table = document.querySelector('#requestsTable');
     if (!table) {
