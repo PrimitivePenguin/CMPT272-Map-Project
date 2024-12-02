@@ -51,7 +51,6 @@ function onMapClick(e) {
     <div class="popup-content">
       <form id="locationForm">
         <label>Reported By: <input type="text" id="reportedBy" placeholder="Your Name"></label><br>
-        <label>Phone Number: <input type="text" id="phoneNumber" placeholder="e.g. 012-345-6789" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"></label><br>
         <label>Location Name: <input type="text" id="locationName" placeholder="Enter location (e.g., SFU)"></label><br>
         <label>Type: <input type="text" id="reportType" placeholder="Enter type (e.g., shooting, medical)"></label><br>
         <label>Status: 
@@ -79,7 +78,7 @@ function onMapClick(e) {
     event.preventDefault();
     // retrieve form data
     const reportedBy = document.getElementById('reportedBy').value;
-    const phoneNumber = document.getElementById('phoneNumber').value;
+    const phone = document.getElementById('phone').value;
     const locationName = document.getElementById('locationName').value;
     const reportType = document.getElementById('reportType').value;
     const status = 'Open';
@@ -124,7 +123,7 @@ function onMapClick(e) {
     const hasMoreInfo = moreInfo ? '✅' : '❎';
     tableRow.innerHTML = `
       <td>${reportedBy}</td>
-      <td>${phoneNumber}</td>
+      <td>${phone}</td>
       <td>${reportType}</td>
       <td>${locationName}</td>
       <td>${moreInfo}</td>
@@ -205,8 +204,7 @@ function renderLocalTable() {
         <td>${entry.phoneNumber}</td>
         <td>${entry.reportType}</td>
         <td>${entry.locationName}</td>
-        <td>${entry.moreInfo}</td>
-        
+        <td>${entry.imageURL}</td>
         <td>${entry.timeReported}</td>
         <td>${entry.status}</td>
         <td>
