@@ -429,7 +429,7 @@ function hideDetails() {
 }
 
 
-function renderTable(requests) {
+function renderTable(locationData) {
   // Clear the table first
   tableBody.innerHTML = '';
 
