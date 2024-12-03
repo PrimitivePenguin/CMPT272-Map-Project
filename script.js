@@ -1,21 +1,6 @@
 // Group: Alexander, Alex, Camille, Emily, Josevan
 // Date: December 3rd, 2024
 
-/* 
-  TODO:
-    - MD5 password verification and saving
-    - use DOM API for storage
-    - make it look better
-    - check if inputs are valid 
-    - edit the time appearamce in table
-    - check if most recent table row should be at top
-    - make the HTML content form more pleasant
-    - delete alerts
-    - make modal format better
-*/
-
-
-
 
 /* Setup */
 // initialize the map centered at (Vancouver, BC) with default zoom level 12
@@ -296,23 +281,6 @@ function editMarker(index) {
   // Ask the user if they want to continue with editing
   const shouldEdit = confirm("Do you want to edit the marker?");
   if (shouldEdit) {
-    //   const newStatus = prompt("Change the status (open/resolved):", markerData.status);
-    //   if (newStatus) {
-    //       // Update the status of the marker
-    //       markerData.status = newStatus;
-    //       localStorage.setItem("requestsArray", JSON.stringify(locationData));
-
-    //       // Update the status in the corresponding table row
-    //       const tableRows = document.querySelectorAll('#requestsTable tbody tr');
-    //       if (tableRows[index]) {
-    //           tableRows[index].cells[7].innerText = newStatus;
-    //       }
-
-    //       alert("Marker updated successfully.");
-
-    //   // close the modal after editing
-    //   closeModal();
-    // }
     let newStatus;
 
       // Loop to validate input
@@ -357,24 +325,6 @@ function deleteMarker(index) {
     alert("You do not have access to edit status. Login to delete.");
     return;
   }
-
-  // get the marker data
-  const markerData = locationData[index];
-  // get the password if set for the marker
-  // const savedPassword = markerData.markerPassword;
-
-  // // if no password exists prompt the user to make one
-  // if (!savedPassword) {
-  //   createPassword();
-  // }
-  // else {
-  //   // if a password is set, ask the user to enter it
-  //   const enteredPassword = CryptoJS.MD5(prompt("Enter password to delete:")).toString();
-  //   if (enteredPassword !== savedPassword) {
-  //     alert("Incorrect password. Deletion canceled.");
-  //     return;
-  //   }
-  // }
 
   // ask the user to confirm if they want to delete the marker
   const deleteConfirmed = confirm("Are you sure you want to delete this marker?");
