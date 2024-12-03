@@ -440,26 +440,26 @@ function hideDetails() {
 }
 
 
-function renderTable(requests) {
+function renderTable(request) {
   // Clear the table first
   tableBody.innerHTML = '';
 
   // Add rows for each request
-  locationData.forEach(request => {
+  locationData.forEach(locationData => {
     const row = document.createElement('tr');
     row.style.cursor = 'pointer'; // Make rows clickable
 
-    for (const key in request) {
+    for (const key in locationData) {
       const cell = document.createElement('td');
-      if (key === 'Picture') {
+      if (key === 'imgURL') {
         const img = document.createElement('img');
-        img.src = request[key];
+        img.src = locationData[key];
         img.alt = 'Request Image';
         img.style.width = '50px';
         img.style.height = '50px';
         cell.appendChild(img);
       } else {
-        cell.textContent = request[key];
+        cell.textContent = locationData[key];
       }
       row.appendChild(cell);
     }
