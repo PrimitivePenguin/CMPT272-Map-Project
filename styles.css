@@ -306,3 +306,26 @@ img {
     padding-right: 10px;
 }
 
+#admin {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px; 
+    cursor: pointer; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+    transition: all 0.3s ease; 
+  }
+  
+  #admin:hover {
+    background-color: #45a049;
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2); 
+    transform: translateY(-2px); 
+  }
+  
+  #admin:active {
+    background-color: #397d40;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transform: translateY(1px);
+  }
+
