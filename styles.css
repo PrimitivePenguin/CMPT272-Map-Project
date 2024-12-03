@@ -218,11 +218,10 @@ th {
     border: 1px solid #ddd;
     background-color: #d6cbc7;
     cursor: pointer;
+    position: relative;
+    z-index: 1;
 }
 
-th:hover::after {
-    content: attr(title);
-}
 
 body.dark th {
     padding: 8px;
@@ -230,6 +229,7 @@ body.dark th {
     border: 1px solid #242424;
     background-color: #1c1c1c;
     cursor: pointer;
+    z-index: 1;
 }
 
 th:hover {
@@ -262,26 +262,10 @@ body.dark tr:hover {
 p {
     font-size: 0.85rem;
 }
-.tooltip {
-    visibility: hidden;
-    position: absolute;
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    padding: 5px;
-    border-radius: 5px;
-    font-size: 0.9rem;
-    z-index: 10;
-    white-space: nowrap;
-    bottom: 100%; /* Adjust position to appear above the header */
-    left: 50%;
-    transform: translateX(-50%);
-    margin-bottom: 5px;
-}
-.tooltip th:hover{
-    visibility: visible;
-    transform: translateY(-10px);
-    transition: visibility 0.3s ease, transform 0.3s ease;
+
+.sort-arrow {
+  font-size: 12px;
+  margin-left: 5px;
 }
 
 .highlight {

@@ -570,7 +570,9 @@ function sortLocationData(sortBy, order = 'asc') {
           const timeB = new Date(b.timeReported);
           return order === 'asc' ? timeA - timeB : timeB - timeA;
       } else if (sortBy === 'phone') {
-          return order === 'asc' ? a.phone - b.phone : b.phone - a.phone;
+          const phoneA = a.phone.replace(/\D/g, '');
+          const phoneB = b.phone.replace(/\D/g, '');
+          return order === 'asc' ? phoneA.localeCompare(phoneB, undefined, { numeric: true }) : phoneB.localeCompare(phoneA, undefined, { numeric: true });
       } else {
           const valA = a[sortBy].toString().toLowerCase();
           const valB = b[sortBy].toString().toLowerCase();
@@ -581,6 +583,27 @@ function sortLocationData(sortBy, order = 'asc') {
   };
 
   return locationData.sort(compare);
+}
+
+function updateSortIndicators(column, order) {
+  const headers = document.querySelectorAll('#requestsTable th');
+  headers.forEach(th => {
+    const columnName = th.getAttribute('data-sort');
+    const arrowSpan = th.querySelector('.sort-arrow');
+
+    if (arrowSpan) {
+      arrowSpan.textContent = '';
+    }
+
+    if (columnName === column) {
+      if (!arrowSpan) {
+        const newArrowSpan = document.createElement('span');
+        newArrowSpan.classList.add('sort-arrow');
+        th.appendChild(newArrowSpan);
+      }
+      th.querySelector('.sort-arrow').textContent = order === 'asc' ? ' ↑' : ' ↓';
+    }
+  });
 }
 
 document.querySelectorAll('#requestsTable th').forEach(th => {
@@ -598,6 +621,8 @@ document.querySelectorAll('#requestsTable th').forEach(th => {
 
     // Sort the requests based on the column and order
     const sortedRequests = sortLocationData(column, order);
+
+    updateSortIndicators(column, order);
 
     // Render the sorted table
     renderTable(sortedRequests);
