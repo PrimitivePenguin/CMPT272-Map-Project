@@ -409,31 +409,6 @@ function deleteMarker(index) {
 }
 
 
-//Emergency Request Table:
-const tableBody = document.querySelector('#requestsTable tbody');
-const popupForm = document.querySelector('#popupForm');
-const overlay = document.querySelector('#overlay');
-const detailPopup = document.createElement('div');
-
-// Create and style the detail popup dynamically
-detailPopup.id = 'detailPopup';
-document.body.appendChild(detailPopup);
-
-function showPopup() {
-  popupForm.style.display = 'block';
-  overlay.style.display = 'block';
-}
-
-function hidePopup() {
-  popupForm.style.display = 'none';
-  overlay.style.display = 'none';
-}
-
-function hideDetails() {
-  detailPopup.style.display = 'none';
-  overlay.style.display = 'none';
-}
-
 function renderTable(request) {
   // Clear the table first
   tableBody.innerHTML = '';
