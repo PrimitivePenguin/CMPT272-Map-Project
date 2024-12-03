@@ -1,3 +1,8 @@
 # CMPT272-Map-Project
+**Emergency Reporting Map**
 
-2024/11/10 - Forms now popup when map is clicked
+Alexander Kojima
+Alex Lee
+Camille Ng
+Emily Trinh
+Josevan Satria Wijaya 
