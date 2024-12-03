@@ -37,7 +37,7 @@ body {
 	padding: 15px 0;
 	padding-right: 35px;
 	cursor: pointer;
-  font-size: 1rem;
+    font-size: 1rem;
 }
 .dm_ip_check input[type='checkbox'] {
 	position: absolute;
@@ -329,3 +329,52 @@ img {
     transform: translateY(1px);
   }
 
+  .modal-content button {
+    background-color: #4CAF50; 
+    color: white; 
+    padding: 10px 20px; 
+    border: none; 
+    border-radius: 5px;
+    font-size: 14px; 
+    cursor: pointer; 
+    transition: all 0.3s ease; 
+    margin: 10px 5px; 
+  }
+  
+  .modal-content button:hover {
+    background-color: #45a049; 
+    transform: translateY(-2px); 
+  }
+  
+  .modal-content button:active {
+    background-color: #397d40; 
+    transform: translateY(1px); 
+  }
+
+  .popup-content {
+    font-family: 'Roboto', Arial, sans-serif;
+  }
+  .popup-content button {
+    background-color: #4CAF50; 
+    color: white; 
+    padding: 10px 20px; 
+    border: none; 
+    border-radius: 5px;
+    font-size: 14px; 
+    cursor: pointer; 
+    transition: all 0.3s ease; 
+    margin: 10px 5px; 
+  }
+  
+  .popup-content button:hover {
+    background-color: #45a049; 
+    transform: translateY(-2px); 
+  }
+  
+  .popup-content button:active {
+    background-color: #397d40; 
+    transform: translateY(1px); 
+  }
+  
+  
+  

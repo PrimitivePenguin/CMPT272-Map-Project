@@ -36,7 +36,7 @@ function onMapClick(e) {
     const formHTML = `
       <div class="popup-content">
         <form id="locationForm">
-          <labe>Name: <input type="text" id="name" required></label><br>
+          <label>Name: <input type="text" id="name" required></label><br>
           <label>Location: <input type="text" id="locationName" placeholder="Enter location (e.g., SFU)" required></label><br>
           <label>Type: <input type="text" id="reportType" placeholder="Enter type (e.g., shooting, medical)" required></label><br>        
           <label>Status: 
