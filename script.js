@@ -450,31 +450,47 @@ function hideDetails() {
 function renderTable(request) {
   // Clear the table first
   tableBody.innerHTML = '';
+  
+  if (request.length > 0) {
+    request.forEach((entry, index) => {
+      const tableRow = document.createElement('tr');
+      const hasMoreInfo = entry.moreInfo ? '✅' : '❎';
+      tableRow.innerHTML = `
+        <td>${entry.name}</td>
+        <td>${entry.phone}</td>
+        <td>${entry.reportType}</td>
+        <td>${entry.locationName}</td>
+        <td>${entry.moreInfo}</td>
+        <td>${entry.timeReported}</td>
+        <td>${entry.status}</td>
+        <td>
+          <span onclick="viewDetails(${index})" style="cursor:pointer;color:blue;text-decoration:underline;">View Info</span> (${hasMoreInfo})
+        </td>
+      `;
+      document.querySelector('#requestsTable tbody').appendChild(tableRow);
 
-  // Add rows for each request
-  locationData.forEach(locationData => {
-    const row = document.createElement('tr');
-    row.style.cursor = 'pointer'; // Make rows clickable
+      const marker = markers[index]; // Ensure synchronization
+      if (marker) {
+        tableRow.addEventListener('mouseover', () => {
+          marker.openTooltip();
+          tableRow.style.backgroundColor = '#FFFF00';
+        });
+        tableRow.addEventListener('mouseout', () => {
+          marker.closeTooltip();
+          tableRow.style.backgroundColor = '';
+        });
 
-    for (const key in locationData) {
-      const cell = document.createElement('td');
-      if (key === 'imgURL') {
-        const img = document.createElement('img');
-        img.src = locationData[key];
-        img.alt = 'Request Image';
-        img.style.width = '50px';
-        img.style.height = '50px';
-        cell.appendChild(img);
-      } else {
-        cell.textContent = locationData[key];
+        marker.on('mouseover', () => {
+          marker.openTooltip();
+          tableRow.style.backgroundColor = '#FFFF00';
+        });
+        marker.on('mouseout', () => {
+          marker.closeTooltip();
+          tableRow.style.backgroundColor = '';
+        });
       }
-      row.appendChild(cell);
-    }
-
-    // Add click event listener to the row
-    row.addEventListener('click', () => showDetails(request));
-    tableBody.appendChild(row);
-  });
+    });
+  }
 }
 
 
