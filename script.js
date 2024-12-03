@@ -118,7 +118,6 @@ function onMapClick(e) {
 
     // add a new row to the table with location details
     const tableRow = document.createElement('tr');
-    const hasMoreInfo = moreInfo ? '✅' : '❎';
     tableRow.innerHTML = `
       <td>${name}</td>
       <td>${phone}</td>
@@ -128,7 +127,7 @@ function onMapClick(e) {
       <td>${timeReported}</td>
       <td>${status}</td>
       <td>
-      <span onclick="viewDetails(${markerIndex})" style="cursor:pointer;color:blue;text-decoration:underline;">View Info</span> (${hasMoreInfo})
+      <span onclick="viewDetails(${markerIndex})" style="cursor:pointer;color:blue;text-decoration:underline;">View Info</span>
       </td> 
     `;
     // find first instance of table in html file
@@ -196,7 +195,6 @@ function renderLocalTable() {
   if (locationData.length > 0) {
     locationData.forEach((entry, index) => {
       const tableRow = document.createElement('tr');
-      const hasMoreInfo = entry.moreInfo ? '✅' : '❎';
       tableRow.innerHTML = `
         <td>${entry.name}</td>
         <td>${entry.phone}</td>
@@ -206,7 +204,7 @@ function renderLocalTable() {
         <td>${entry.timeReported}</td>
         <td>${entry.status}</td>
         <td>
-          <span onclick="viewDetails(${index})" style="cursor:pointer;color:blue;text-decoration:underline;">View Info</span> (${hasMoreInfo})
+          <span onclick="viewDetails(${index})" style="cursor:pointer;color:blue;text-decoration:underline;">View Info</span>
         </td>
       `;
       document.querySelector('#requestsTable tbody').appendChild(tableRow);
@@ -443,7 +441,6 @@ function renderTable(request) {
   if (request.length > 0) {
     request.forEach((entry, index) => {
       const tableRow = document.createElement('tr');
-      const hasMoreInfo = entry.moreInfo ? '✅' : '❎';
       tableRow.innerHTML = `
         <td>${entry.name}</td>
         <td>${entry.phone}</td>
@@ -453,7 +450,7 @@ function renderTable(request) {
         <td>${entry.timeReported}</td>
         <td>${entry.status}</td>
         <td>
-          <span onclick="viewDetails(${index})" style="cursor:pointer;color:blue;text-decoration:underline;">View Info</span> (${hasMoreInfo})
+          <span onclick="viewDetails(${index})" style="cursor:pointer;color:blue;text-decoration:underline;">View Info</span>
         </td>
       `;
       document.querySelector('#requestsTable tbody').appendChild(tableRow);
