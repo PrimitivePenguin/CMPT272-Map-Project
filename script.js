@@ -286,6 +286,11 @@ function closeModal() {
 }
 
 function editMarker(index) {
+
+  if(viewOnly == true) {
+    alert("Login to Edit status");
+    return;
+  }
   // Get the marker data
   const markerData = locationData[index];
 
@@ -349,6 +354,11 @@ function editMarker(index) {
 
 // function to delete a marker (similar password checker as editMarker)
 function deleteMarker(index) {
+  if(viewOnly == true) {
+    alert("Login to Edit status");
+    return;
+  }
+  
   // get the marker data
   const markerData = locationData[index];
   // get the password if set for the marker
@@ -549,7 +559,7 @@ document.getElementById('admin').addEventListener('click', admin);
 
 document.addEventListener('DOMContentLoaded', function () {
   
-  viewOnly = false;
+  viewOnly = true;
   changeMode();
 });
 
