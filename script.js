@@ -29,7 +29,6 @@ let markers = [];
 /* Functionality */
 // handles map click events to add a new marker with form input
 function onMapClick(e) {
-  if (!viewOnly) {
     // get current timestamp
     const timeReported = new Date().toLocaleString('en-US', { hour12: true });
     // HTML form for capturing marker details
@@ -152,7 +151,6 @@ function onMapClick(e) {
     };
     updateVisibleRows();
 
-  }
 }
 
 // Function to render data that was stored in local
