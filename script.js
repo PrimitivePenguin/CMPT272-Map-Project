@@ -44,7 +44,7 @@ let markers = [];
 /* Functionality */
 // handles map click events to add a new marker with form input
 function onMapClick(e) {
-  if (!viewOnly) {
+  if (viewOnly) {
   // get current timestamp
   const timeReported = new Date().toLocaleString('en-US', { hour12: true });
   // HTML form for capturing marker details
@@ -62,8 +62,8 @@ function onMapClick(e) {
         </label><br>
         <label>Phone number: <input type="tel" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="xxx-xxx-xxxx" required></label><br>        
         <label>More Info: <textarea id="moreInfo" placeholder="Enter additional details"></textarea></label><br>
+        <label> Optional Picture URL: <input type="text" id="pictureInput"></label>
         <label>Optional Image: <input type="file" id="imageUpload" accept="image/*"></label><br>
-        // <labe>Create password: <input type="checkbox" id="passCheck"></label><br>
         <button type="submit">Submit</button>
       </form>
     </div>
@@ -434,28 +434,10 @@ function hidePopup() {
   overlay.style.display = 'none';
 }
 
-function showDetails(request) {
-  detailPopup.innerHTML = `
-        <h3>Request Details</h3>
-        <p><strong>Name:</strong> ${request.Name}</p>
-        <p><strong>Phone Number:</strong> ${request.PhoneNumber}</p>
-        <p><strong>Type:</strong> ${request.Type}</p>
-        <p><strong>Location:</strong> ${request.Location}</p>
-        <p><strong>Picture:</strong> <img src="${request.Picture}" alt="Request Image" style="width: 100px; height: 100px;"></p>
-        <p><strong>Comments:</strong> ${request.Comments}</p>
-        <p><strong>Time:</strong> ${request.Time}</p>
-        <p><strong>Status:</strong> ${request.Status}</p>
-        <button onclick="hideDetails()">Close</button>
-    `;
-  detailPopup.style.display = 'block';
-  overlay.style.display = 'block';
-}
-
 function hideDetails() {
   detailPopup.style.display = 'none';
   overlay.style.display = 'none';
 }
-
 
 function renderTable(request) {
   // Clear the table first
