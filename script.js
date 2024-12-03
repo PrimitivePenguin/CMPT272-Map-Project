@@ -29,128 +29,128 @@ let markers = [];
 /* Functionality */
 // handles map click events to add a new marker with form input
 function onMapClick(e) {
-  if (viewOnly) {
-  // get current timestamp
-  const timeReported = new Date().toLocaleString('en-US', { hour12: true });
-  // HTML form for capturing marker details
-  const formHTML = `
-    <div class="popup-content">
-      <form id="locationForm">
-        <labe>Name: <input type="text" id="name" required></label><br>
-        <label>Location: <input type="text" id="locationName" placeholder="Enter location (e.g., SFU)" required></label><br>
-        <label>Type: <input type="text" id="reportType" placeholder="Enter type (e.g., shooting, medical)" required></label><br>        
-        <label>Status: 
-          <select id="status" required>
-            <option value="open" selected>Open</option>
-            <option value="resolved">Resolved</option>
-          </select>
-        </label><br>
-        <label>Phone number: <input type="tel" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="xxx-xxx-xxxx" required></label><br>        
-        <label>More Info: <textarea id="moreInfo" placeholder="Enter additional details"></textarea></label><br>
-        <label> Optional Picture URL: <input type="text" id="pictureInput"></label>
-        <label>Optional Image: <input type="file" id="imageUpload" accept="image/*"></label><br>
-        <button type="submit">Submit</button>
-      </form>
-    </div>
-  `;
-
-  // display form in a popup at the clicked location
-  const popup = L.popup({
-    shadowSize: [50, 50]
-  }).setLatLng(e.latlng).setContent(formHTML).openOn(map);
-
-  // handle form submission to add marker data
-  document.getElementById('locationForm').onsubmit = function (event) {
-    event.preventDefault();
-    // retrieve form data
-    const name = document.getElementById('name').value;
-    const phone = document.getElementById('phone').value || 'None';
-    const locationName = document.getElementById('locationName').value;
-    const reportType = document.getElementById('reportType').value;
-    const status = 'Open';
-    const moreInfo = document.getElementById('moreInfo').value;
-    //const imageFile = document.getElementById('imageUpload').files[0];
-    const picture = document.getElementById('pictureInput').value;
-    //const imageURL = imageFile ? URL.createObjectURL(imageFile) : null;
-
-    // add location data to the array locationData
-
-    
-      locationData.push({ name, phone, locationName, reportType, status, location, picture, moreInfo, timeReported });
-    console.log(locationData);
-    localStorage.setItem("requestsArray", JSON.stringify(locationData));
-
-    // create a marker on the map
-    const markerIndex = locationData.length - 1;
-    // add marker to the markers array
-    const marker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(map);
-    markers.push(marker);
-
-    // add a tooltip to the marker
-    marker.bindTooltip(`<strong>${locationName}</strong><br>${reportType}`, {
-      // moves the tooltip 20px left, -20px down
-      offset: [-15, -20],
-      direction: 'top',
-    });
-
-    // add marker to local storage
-    // only store essential info, bc marker objects are complicated
-    const markerData = markers.map(marker => ({
-      lat: marker.getLatLng().lat,
-      lng: marker.getLatLng().lng,
-    }));
-    localStorage.setItem("markerArray", JSON.stringify(markerData));
-
-    // add a new row to the table with location details
-    const tableRow = document.createElement('tr');
-    tableRow.innerHTML = `
-      <td>${name}</td>
-      <td>${phone}</td>
-      <td>${reportType}</td>
-      <td>${locationName}</td>
-      <td>${moreInfo}</td>
-      <td>${timeReported}</td>
-      <td>${status}</td>
-      <td>
-      <span onclick="viewDetails(${markerIndex})" style="cursor:pointer;color:blue;text-decoration:underline;">View Info</span>
-      </td> 
+  if (!viewOnly) {
+    // get current timestamp
+    const timeReported = new Date().toLocaleString('en-US', { hour12: true });
+    // HTML form for capturing marker details
+    const formHTML = `
+      <div class="popup-content">
+        <form id="locationForm">
+          <labe>Name: <input type="text" id="name" required></label><br>
+          <label>Location: <input type="text" id="locationName" placeholder="Enter location (e.g., SFU)" required></label><br>
+          <label>Type: <input type="text" id="reportType" placeholder="Enter type (e.g., shooting, medical)" required></label><br>        
+          <label>Status: 
+            <select id="status" required>
+              <option value="open" selected>Open</option>
+              <option value="resolved">Resolved</option>
+            </select>
+          </label><br>
+          <label>Phone number: <input type="tel" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="xxx-xxx-xxxx" required></label><br>        
+          <label>More Info: <textarea id="moreInfo" placeholder="Enter additional details"></textarea></label><br>
+          <label> Optional Picture URL: <input type="text" id="pictureInput"></label>
+          <label>Optional Image: <input type="file" id="imageUpload" accept="image/*"></label><br>
+          <button type="submit">Submit</button>
+        </form>
+      </div>
     `;
 
-    // making the rows clickable
-    tableRow.addEventListener('click', () => viewDetails(markerIndex));
+    // display form in a popup at the clicked location
+    const popup = L.popup({
+      shadowSize: [50, 50]
+    }).setLatLng(e.latlng).setContent(formHTML).openOn(map);
 
-    // find first instance of table in html file
-    document.querySelector('#requestsTable tbody').appendChild(tableRow);
-    console.log("Row added:", tableRow);
+    // handle form submission to add marker data
+    document.getElementById('locationForm').onsubmit = function (event) {
+      event.preventDefault();
+      // retrieve form data
+      const name = document.getElementById('name').value;
+      const phone = document.getElementById('phone').value || 'None';
+      const locationName = document.getElementById('locationName').value;
+      const reportType = document.getElementById('reportType').value;
+      const status = 'Open';
+      const moreInfo = document.getElementById('moreInfo').value;
+      //const imageFile = document.getElementById('imageUpload').files[0];
+      const picture = document.getElementById('pictureInput').value;
+      //const imageURL = imageFile ? URL.createObjectURL(imageFile) : null;
 
-    // hover over table row case
-    tableRow.addEventListener('mouseover', () => {
-      marker.openTooltip();
-      tableRow.style.backgroundColor = '#FFFF00';
-    });
-    tableRow.addEventListener('mouseout', () => {
-      marker.closeTooltip();
-      tableRow.style.backgroundColor = '';
-    });
-    // hover over tooltip case
-    marker.on('mouseover', () => {
-      marker.openTooltip();
-      tableRow.style.backgroundColor = '#FFFF00';
-    });
-    marker.on('mouseout', () => {
-      marker.closeTooltip();
-      tableRow.style.backgroundColor = '';
-    });
+      // add location data to the array locationData
 
-    // clicking on marker shows details
-    marker.on('click', () => {
-      viewDetails(markerIndex);
-    });
+      
+        locationData.push({ name, phone, locationName, reportType, status, location, picture, moreInfo, timeReported });
+      console.log(locationData);
+      localStorage.setItem("requestsArray", JSON.stringify(locationData));
 
-    // close the popup after adding the marker
-    popup.remove();
-  };
-  updateVisibleRows();
+      // create a marker on the map
+      const markerIndex = locationData.length - 1;
+      // add marker to the markers array
+      const marker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(map);
+      markers.push(marker);
+
+      // add a tooltip to the marker
+      marker.bindTooltip(`<strong>${locationName}</strong><br>${reportType}`, {
+        // moves the tooltip 20px left, -20px down
+        offset: [-15, -20],
+        direction: 'top',
+      });
+
+      // add marker to local storage
+      // only store essential info, bc marker objects are complicated
+      const markerData = markers.map(marker => ({
+        lat: marker.getLatLng().lat,
+        lng: marker.getLatLng().lng,
+      }));
+      localStorage.setItem("markerArray", JSON.stringify(markerData));
+
+      // add a new row to the table with location details
+      const tableRow = document.createElement('tr');
+      tableRow.innerHTML = `
+        <td>${name}</td>
+        <td>${phone}</td>
+        <td>${reportType}</td>
+        <td>${locationName}</td>
+        <td>${moreInfo}</td>
+        <td>${timeReported}</td>
+        <td>${status}</td>
+        <td>
+        <span onclick="viewDetails(${markerIndex})" style="cursor:pointer;color:blue;text-decoration:underline;">View Info</span>
+        </td> 
+      `;
+
+      // making the rows clickable
+      tableRow.addEventListener('click', () => viewDetails(markerIndex));
+
+      // find first instance of table in html file
+      document.querySelector('#requestsTable tbody').appendChild(tableRow);
+      console.log("Row added:", tableRow);
+
+      // hover over table row case
+      tableRow.addEventListener('mouseover', () => {
+        marker.openTooltip();
+        tableRow.style.backgroundColor = '#FFFF00';
+      });
+      tableRow.addEventListener('mouseout', () => {
+        marker.closeTooltip();
+        tableRow.style.backgroundColor = '';
+      });
+      // hover over tooltip case
+      marker.on('mouseover', () => {
+        marker.openTooltip();
+        tableRow.style.backgroundColor = '#FFFF00';
+      });
+      marker.on('mouseout', () => {
+        marker.closeTooltip();
+        tableRow.style.backgroundColor = '';
+      });
+
+      // clicking on marker shows details
+      marker.on('click', () => {
+        viewDetails(markerIndex);
+      });
+
+      // close the popup after adding the marker
+      popup.remove();
+    };
+    updateVisibleRows();
 
   }
 }
@@ -453,6 +453,7 @@ function login() {
   } else {
     viewOnly = false;
     alert("Welcome back.");
+    console.log("viewOnly Status:", viewOnly);
   }
 }
 
@@ -463,7 +464,6 @@ function logout() {
 document.getElementById('admin').addEventListener('click', admin);
 
 document.addEventListener('DOMContentLoaded', function () {
-  
   viewOnly = true;
   changeMode();
 });
