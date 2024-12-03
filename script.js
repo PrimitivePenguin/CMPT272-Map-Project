@@ -84,17 +84,14 @@ function onMapClick(e) {
     const reportType = document.getElementById('reportType').value;
     const status = 'Open';
     const moreInfo = document.getElementById('moreInfo').value;
-    const imageFile = document.getElementById('imageUpload').files[0];
-    const imageURL = imageFile ? URL.createObjectURL(imageFile) : null;
+    //const imageFile = document.getElementById('imageUpload').files[0];
+    const picture = document.getElementById('pictureInput').value;
+    //const imageURL = imageFile ? URL.createObjectURL(imageFile) : null;
 
     // add location data to the array locationData
 
-    if (document.getElementById('passCheck').checked) {
-      var pass = createPassword();
-      locationData.push({ name, phone, locationName, reportType, status, location, imageURL, moreInfo, timeReported, markerPassword: pass });
-    } else {
-      locationData.push({ name, phone, locationName, reportType, status, location, imageURL, moreInfo, timeReported, markerPassword: null });
-    }
+    
+      locationData.push({ name, phone, locationName, reportType, status, location, picture, moreInfo, timeReported });
     console.log(locationData);
     localStorage.setItem("requestsArray", JSON.stringify(locationData));
 
@@ -253,7 +250,7 @@ function viewDetails(index) {
 
         <div class="modal-header">
           <!-- If an image URL is present, display the image -->
-          ${locationEntry.imageURL ? `<img src="${locationEntry.imageURL}" alt="Location Image" style="width: 100%; height: auto;">` : ''}
+          ${locationEntry.picture ? `<img src="${locationEntry.picture}" alt="Location Image" style="width: 100%; height: auto;">` : ''}
         </div>
         <div class="modal-body">
           <button class="close" onclick="closeModal()">×</button>  <!-- Close button for the modal -->
