@@ -112,7 +112,7 @@ function onMapClick(e) {
         <td>${timeReported}</td>
         <td>${status}</td>
         <td>
-        <span onclick="viewDetails(${markerIndex})" style="cursor:pointer;color:blue;text-decoration:underline;">View Info</span>
+        <span onclick="viewDetails(${markerIndex})" style="cursor:pointer;color:red;text-decoration:underline;">View Info</span>
         </td> 
       `;
 
@@ -193,7 +193,7 @@ function renderLocalTable() {
         <td>${entry.timeReported}</td>
         <td>${entry.status}</td>
         <td>
-          <span onclick="viewDetails(${index})" style="cursor:pointer;color:blue;text-decoration:underline;">View Info</span>
+          <span onclick="viewDetails(${index})" style="cursor:pointer;color:red;text-decoration:underline;">View Info</span>
         </td>
       `;
       document.querySelector('#requestsTable tbody').appendChild(tableRow);
@@ -380,7 +380,7 @@ function renderTable(request) {
         <td>${entry.timeReported}</td>
         <td>${entry.status}</td>
         <td>
-          <span onclick="viewDetails(${index})" style="cursor:pointer;color:blue;text-decoration:underline;">View Info</span>
+          <span onclick="viewDetails(${index})" style="cursor:pointer;color:red;text-decoration:underline;">View Info</span>
         </td>
       `;
       document.querySelector('#requestsTable tbody').appendChild(tableRow);
