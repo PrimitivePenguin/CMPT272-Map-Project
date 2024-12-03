@@ -288,7 +288,7 @@ function closeModal() {
 function editMarker(index) {
 
   if(viewOnly == true) {
-    alert("Login to Edit status");
+    alert("You do not have access to edit status. Login to edit.");
     return;
   }
   // Get the marker data
@@ -355,10 +355,10 @@ function editMarker(index) {
 // function to delete a marker (similar password checker as editMarker)
 function deleteMarker(index) {
   if(viewOnly == true) {
-    alert("Login to Edit status");
+    alert("You do not have access to edit status. Login to delete.");
     return;
   }
-  
+
   // get the marker data
   const markerData = locationData[index];
   // get the password if set for the marker
