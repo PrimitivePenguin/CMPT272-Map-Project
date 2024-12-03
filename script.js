@@ -130,6 +130,10 @@ function onMapClick(e) {
       <span onclick="viewDetails(${markerIndex})" style="cursor:pointer;color:blue;text-decoration:underline;">View Info</span>
       </td> 
     `;
+
+    // making the rows clickable
+    tableRow.addEventListener('click', () => viewDetails(markerIndex));
+
     // find first instance of table in html file
     document.querySelector('#requestsTable tbody').appendChild(tableRow);
     console.log("Row added:", tableRow);
