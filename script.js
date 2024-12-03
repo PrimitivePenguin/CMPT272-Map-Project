@@ -364,6 +364,7 @@ function deleteMarker(index) {
 
 
 function renderTable(request) {
+  const tableBody = document.querySelector('#requestsTable tbody');
   // Clear the table first
   tableBody.innerHTML = '';
   
