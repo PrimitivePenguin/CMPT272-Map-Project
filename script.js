@@ -127,7 +127,6 @@ function onMapClick(e) {
       <td>${phone}</td>
       <td>${reportType}</td>
       <td>${locationName}</td>
-      <td>${imageURL}</td>
       <td>${moreInfo}</td>
       <td>${timeReported}</td>
       <td>${status}</td>
@@ -206,7 +205,6 @@ function renderLocalTable() {
         <td>${entry.phone}</td>
         <td>${entry.reportType}</td>
         <td>${entry.locationName}</td>
-        <td>${entry.imageURL}</td>
         <td>${entry.moreInfo}</td>
         <td>${entry.timeReported}</td>
         <td>${entry.status}</td>
