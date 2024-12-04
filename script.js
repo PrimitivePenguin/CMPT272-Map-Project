@@ -307,7 +307,7 @@ function editMarker(index) {
       // Update the status in the corresponding table row
       const tableRows = document.querySelectorAll('#requestsTable tbody tr');
       if (tableRows[index]) {
-          tableRows[index].cells[7].innerText = newStatus;
+          tableRows[index].cells[6].innerText = newStatus;
       }
 
       alert("Marker updated successfully.");
@@ -435,15 +435,14 @@ function admin() {
 
   const button = document.getElementById('admin');
   if (viewOnly) {
-    // TODO: maybe add images
-    button.innerHTML = '<img src="cant_addmarker.png" alt="Log in">';
+    button.innerHTML = 'Log In';
   } else {
-    button.innerHTML = '<img src="addmarker.png" alt="Log Out">';
+    button.innerHTML = 'Log Out';
   }
 }
 function login() {
   // Ask for password
-  var enteredPassword = CryptoJS.MD5(prompt("Enter password to view the map:", ""));
+  var enteredPassword = CryptoJS.MD5(prompt("Enter password to add/edit markers on the map:", ""));
   var strPass = enteredPassword.toString();
   var strHash = hash.toString();
   console.log(strPass);
