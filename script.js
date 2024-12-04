@@ -443,7 +443,7 @@ function admin() {
 }
 function login() {
   // Ask for password
-  var enteredPassword = CryptoJS.MD5(prompt("Enter password to view the map:"));
+  var enteredPassword = CryptoJS.MD5(prompt("Enter password to view the map:", ""));
   var strPass = enteredPassword.toString();
   var strHash = hash.toString();
   console.log(strPass);
@@ -599,6 +599,6 @@ document.addEventListener('DOMContentLoaded', () => {
       map.on('moveend', updateVisibleRows);
       map.on('zoomend', updateVisibleRows);
   });
-
+  alert("You are currently in view-only mode. Log in to add markers, password is 'Message'.");
   console.log("viewOnly Status:", viewOnly);
 });
