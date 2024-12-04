@@ -303,12 +303,21 @@ img {
 }
 
 
-.flag {
+.bc-flag {
     width: 150px; /* Adjust size for flags */
     height: auto;
     padding-top: 5px;
     padding-right: 10px;
+    padding-left: 20px;
 }
+
+.can-flag {
+    width: 180px;
+    height: auto;
+    padding-top: 5px;
+    padding-right: 15px;
+}
+
 
 #admin {
     background-color: #4CAF50;
@@ -379,6 +388,8 @@ img {
     background-color: #397d40; 
     transform: translateY(1px); 
   }
+  
+  
   
   
   
